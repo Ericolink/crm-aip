@@ -1,0 +1,23 @@
+{
+  "Metadata": {
+    "title": "CRM · Alejandro Alcazar",
+    "description": "CRM privado para la gestión de clientes de seguros médicos."
+  },
+  "Common": {
+    "language": "Idioma",
+    "languages": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "Home": {
+    "title": "Base del proyecto lista",
+    "subtitle": "Etapa 0 completada: estructura, idiomas y entorno de desarrollo.",
+    "nextStep": "Siguiente etapa: autenticación y roles.",
+    "sampleDate": "Ejemplo de formato de fecha: {date, date, long}"
+  },
+  "NotFound": {
+    "title": "Página no encontrada",
+    "back": "Volver al inicio"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "Metadata": {
+    "title": "CRM · Alejandro Alcazar",
+    "description": "Private CRM for managing health insurance clients."
+  },
+  "Common": {
+    "language": "Language",
+    "languages": {
+      "es": "Español",
+      "en": "English"
+    }
+  },
+  "Home": {
+    "title": "Project foundation ready",
+    "subtitle": "Stage 0 complete: structure, languages and development environment.",
+    "nextStep": "Next stage: authentication and roles.",
+    "sampleDate": "Date format example: {date, date, long}"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "back": "Back to home"
+  }
+}

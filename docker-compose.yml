@@ -1,0 +1,27 @@
+# Entorno de desarrollo LOCAL. No usar en producción.
+# Uso: npm run db:up · npm run db:down · npm run db:reset (borra los datos)
+services:
+  db:
+    image: postgres:18.7-alpine
+    container_name: crm-seguros-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Define POSTGRES_USER en .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:?Define POSTGRES_DB en .env}
+      # SCRAM-SHA-256 en lugar de md5 para autenticación de contraseñas.
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    ports:
+      # Solo accesible desde esta computadora (no desde la red local).
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      # PostgreSQL 18+ guarda los datos en /var/lib/postgresql/<versión>/docker
+      - crm_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  crm_pgdata:
