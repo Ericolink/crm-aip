@@ -1,14 +1,16 @@
-// Esquema de la base de datos del CRM.
-// Etapa 1: autenticación (tablas requeridas por Better Auth), roles/permisos y auditoría.
-// Las tablas de clientes, pólizas, médicos, etc. se agregan en la Etapa 2.
+// Esquema de la base de datos del CRM (dividido por dominio en prisma/schema/*.prisma).
+// base.prisma: configuración, usuarios, autenticación, roles/permisos y auditoría de seguridad.
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../../src/generated/prisma"
+  previewFeatures = ["partialIndexes", "postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  // pg_trgm: búsqueda rápida por nombre/correo con coincidencias parciales (ILIKE).
+  extensions = [pg_trgm]
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -37,6 +39,20 @@ model User {
   accounts   Account[]
   twoFactors TwoFactor[]
   auditLogs  AuditLog[]
+
+  // Relaciones con el dominio de clientes
+  clientsAssigned   Client[]          @relation("ClientAssignedAgent")
+  clientsCreated    Client[]          @relation("ClientCreatedBy")
+  insurancesWritten ClientInsurance[] @relation("InsuranceWritingAgent")
+  insurancesCreated ClientInsurance[] @relation("InsuranceCreatedBy")
+  notes             Note[]
+  remindersAssigned Reminder[]        @relation("ReminderAssignedTo")
+  remindersCreated  Reminder[]        @relation("ReminderCreatedBy")
+  documentsUploaded Document[]
+  consentsRecorded  ClientConsent[]
+  activityLogs      ActivityLog[]
+  importJobs        ImportJob[]
+  exportJobs        ExportJob[]
 
   @@index([roleId])
   @@map("users")

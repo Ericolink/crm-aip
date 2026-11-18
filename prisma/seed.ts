@@ -5,7 +5,9 @@
  * 2. Crea los roles iniciales que falten, con sus permisos por defecto.
  *    Si un rol ya existe NO se tocan sus permisos (pudieron cambiarse desde Configuración),
  *    excepto ADMIN, que siempre recibe todos los permisos.
- * 3. Si no existe ningún usuario, crea el administrador inicial con los datos de .env.
+ * 3. Crea los catálogos que falten (programas, aseguradoras, condiciones, consentimientos).
+ *    Las relaciones aseguradora ↔ programa NO se crean: se configuran desde la interfaz.
+ * 4. Si no existe ningún usuario, crea el administrador inicial con los datos de .env.
  *
  * Solo datos ficticios. Nunca usar con información real de clientes.
  */
@@ -16,6 +18,12 @@ import { z } from "zod";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { PASSWORD_POLICY } from "../src/lib/auth/policy";
 import { ALL_PERMISSIONS, DEFAULT_ROLES, ROLE_KEYS } from "../src/lib/permissions/catalog";
+import {
+  CHRONIC_CONDITIONS,
+  CONSENT_TYPES,
+  COVERAGE_PROGRAMS,
+  INSURANCE_CARRIERS,
+} from "./data/catalogs";
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error("Falta DATABASE_URL en .env");
@@ -106,9 +114,28 @@ async function seedInitialAdmin() {
   );
 }
 
+async function seedCatalogs() {
+  for (const p of COVERAGE_PROGRAMS) {
+    await prisma.coverageProgram.upsert({ where: { code: p.code }, update: {}, create: p });
+  }
+  for (const name of INSURANCE_CARRIERS) {
+    await prisma.insuranceCarrier.upsert({ where: { name }, update: {}, create: { name } });
+  }
+  for (const c of CHRONIC_CONDITIONS) {
+    await prisma.chronicCondition.upsert({ where: { nameEn: c.nameEn }, update: {}, create: c });
+  }
+  for (const c of CONSENT_TYPES) {
+    await prisma.consentType.upsert({ where: { code: c.code }, update: {}, create: c });
+  }
+  console.log(
+    `  catálogos: ${COVERAGE_PROGRAMS.length} programas, ${INSURANCE_CARRIERS.length} aseguradoras (sin relaciones), ${CHRONIC_CONDITIONS.length} condiciones, ${CONSENT_TYPES.length} tipos de consentimiento`,
+  );
+}
+
 async function main() {
   console.log("Seed:");
   await seedPermissionsAndRoles();
+  await seedCatalogs();
   await seedInitialAdmin();
 }
 

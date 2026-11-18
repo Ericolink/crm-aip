@@ -11,8 +11,10 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
 function createClient() {
   const adapter = new PrismaPg({ connectionString: serverEnv().DATABASE_URL });
-  // Sin log de consultas: los parámetros podrían contener datos sensibles.
-  return new PrismaClient({ adapter, log: ["warn", "error"] });
+  // Sin log de consultas ni de errores: ambos pueden contener datos de clientes
+  // (parámetros, o la fila completa en errores de PostgreSQL). Los errores se lanzan a quien
+  // llama y se registran solo con describeDbErrorForLog() (src/lib/db-errors.ts).
+  return new PrismaClient({ adapter, log: ["warn"] });
 }
 
 export const prisma = globalForPrisma.prisma ?? createClient();

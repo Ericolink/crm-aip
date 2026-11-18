@@ -1,0 +1,116 @@
+// Catálogos configurables desde la sección Configuración (sin tocar código).
+// Los textos visibles se guardan en ambos idiomas (nameEs / nameEn).
+
+/// Programas de cobertura: Medicare, Medicaid, ACA. `code` es estable y lo usa el código
+/// (p. ej. para mostrar los campos de Partes A/B solo en Medicare).
+model CoverageProgram {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  nameEs    String
+  nameEn    String
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carriers    CarrierProgram[]
+  enrollments ClientProgramEnrollment[]
+  insurances  ClientInsurance[]
+
+  @@map("coverage_programs")
+}
+
+/// Compañías aseguradoras (nombre comercial; no se traduce).
+model InsuranceCarrier {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  programs   CarrierProgram[]
+  insurances ClientInsurance[]
+
+  @@map("insurance_carriers")
+}
+
+/// Qué programas ofrece cada aseguradora. Se administra desde Configuración:
+/// el sistema NO asume ninguna relación.
+model CarrierProgram {
+  carrierId String
+  programId String
+  isActive  Boolean          @default(true)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  carrier   InsuranceCarrier @relation(fields: [carrierId], references: [id], onDelete: Restrict)
+  program   CoverageProgram  @relation(fields: [programId], references: [id], onDelete: Restrict)
+
+  @@id([carrierId, programId])
+  @@index([programId])
+  @@map("carrier_programs")
+}
+
+model ChronicCondition {
+  id        String   @id @default(cuid())
+  nameEs    String   @unique
+  nameEn    String   @unique
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clients ClientCondition[]
+
+  @@map("chronic_conditions")
+}
+
+/// Tipos de consentimiento (SOA, contacto por teléfono, SMS, correo, WhatsApp…).
+/// La vigencia la define el usuario; no se asumen reglas de CMS.
+model ConsentType {
+  id                  String   @id @default(cuid())
+  code                String   @unique
+  nameEs              String
+  nameEn              String
+  requiresDocument    Boolean  @default(false)
+  /// Días de vigencia por defecto (null = no vence). Configurable.
+  defaultValidityDays Int?
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  consents ClientConsent[]
+
+  @@map("consent_types")
+}
+
+/// Directorio de médicos compartido entre clientes (un PCP puede atender a muchos clientes).
+model Doctor {
+  id        String   @id @default(cuid())
+  name      String
+  specialty String?
+  clinic    String?
+  phone     String?
+  address   String?
+  /// National Provider Identifier (opcional, público).
+  npi       String?  @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  clients ClientDoctor[]
+
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "doctors_name_trgm_idx")
+  @@map("doctors")
+}
+
+/// Catálogo de medicamentos (nombre). Dosis y frecuencia van en ClientMedication.
+model Medication {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  clients ClientMedication[]
+
+  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "medications_name_trgm_idx")
+  @@map("medications")
+}

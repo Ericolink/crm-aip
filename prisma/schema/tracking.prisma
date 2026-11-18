@@ -1,0 +1,77 @@
+// Trazabilidad del negocio (historial de cambios) y trabajos de importación/exportación.
+// La auditoría de SEGURIDAD (logins, accesos) está en AuditLog (base.prisma).
+
+enum ActivityAction {
+  CREATE
+  UPDATE
+  DELETE
+  RESTORE
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ExportFormat {
+  CSV
+  XLSX
+}
+
+/// Historial de cambios de un cliente y sus registros. SOLO INSERCIÓN (trigger en la base).
+/// `changes` = { campo: { from, to } }. Para campos sensibles: { campo: { changed: true } }.
+model ActivityLog {
+  id         String         @id @default(cuid())
+  createdAt  DateTime       @default(now())
+  clientId   String?
+  client     Client?        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  actorId    String?
+  actor      User?          @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  /// Tipo de registro: client, insurance, enrollment, doctor, medication, condition, note, reminder…
+  entityType String
+  entityId   String
+  action     ActivityAction
+  changes    Json?
+
+  @@index([clientId, createdAt])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
+
+/// Importación de clientes (CSV/XLSX). `errors` guarda fila, campo y código de error,
+/// nunca el valor del archivo.
+model ImportJob {
+  id           String    @id @default(cuid())
+  createdById  String
+  createdBy    User      @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  fileName     String
+  status       JobStatus @default(PENDING)
+  totalRows    Int       @default(0)
+  importedRows Int       @default(0)
+  failedRows   Int       @default(0)
+  errors       Json?
+  createdAt    DateTime  @default(now())
+  completedAt  DateTime?
+
+  @@index([createdById, createdAt])
+  @@map("import_jobs")
+}
+
+/// Registro de cada exportación: quién, cuándo, qué filtros y columnas, y si incluyó datos sensibles.
+model ExportJob {
+  id                String       @id @default(cuid())
+  createdById       String
+  createdBy         User         @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  format            ExportFormat
+  filters           Json?
+  columns           Json
+  rowCount          Int          @default(0)
+  includesSensitive Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+
+  @@index([createdById, createdAt])
+  @@map("export_jobs")
+}

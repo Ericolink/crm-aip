@@ -7,6 +7,8 @@ const valid = {
   DATABASE_URL: `postgresql://user:${SECRET}@127.0.0.1:5432/db`,
   BETTER_AUTH_SECRET: "x".repeat(44),
   BETTER_AUTH_URL: "http://localhost:3000",
+  FIELD_ENCRYPTION_KEY: Buffer.alloc(32, 1).toString("base64"),
+  BLIND_INDEX_KEY: Buffer.alloc(32, 2).toString("base64"),
 };
 
 describe("validación de variables de entorno", () => {
@@ -27,6 +29,16 @@ describe("validación de variables de entorno", () => {
   it("exige un secreto de autenticación de al menos 32 caracteres", () => {
     expect(() => parseServerEnv({ ...valid, BETTER_AUTH_SECRET: "corto" })).toThrow(
       /BETTER_AUTH_SECRET/,
+    );
+  });
+
+  it("exige llaves de cifrado de 32 bytes", () => {
+    const short = Buffer.alloc(16, 1).toString("base64");
+    expect(() => parseServerEnv({ ...valid, FIELD_ENCRYPTION_KEY: short })).toThrow(
+      /FIELD_ENCRYPTION_KEY/,
+    );
+    expect(() => parseServerEnv({ ...valid, BLIND_INDEX_KEY: undefined })).toThrow(
+      /BLIND_INDEX_KEY/,
     );
   });
 

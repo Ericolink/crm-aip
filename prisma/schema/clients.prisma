@@ -1,0 +1,382 @@
+// Dominio de clientes y prospectos.
+//
+// Reglas generales:
+// - Nada se borra físicamente: `deletedAt` marca el registro como eliminado.
+// - Los identificadores sensibles se guardan en tres columnas:
+//     *Enc   → valor cifrado (AES-256-GCM, ligado al nombre del campo)
+//     *Idx   → índice ciego (HMAC-SHA256) para búsqueda EXACTA sin descifrar
+//     *Last4 → últimos 4 caracteres para mostrar "•••• 1234"
+//   Nunca existe una columna con el valor en texto plano.
+// - Teléfonos: solo dígitos (10). El formato se aplica al mostrar.
+// - Fechas de cobertura: tipo DATE (sin hora ni zona horaria).
+
+enum ClientStatus {
+  NEW
+  PENDING
+  ACTIVE
+  URGENT
+}
+
+enum PreferredLanguage {
+  ES
+  EN
+  OTHER
+}
+
+enum ContactRelationship {
+  SON
+  DAUGHTER
+  HUSBAND
+  WIFE
+  RELATIVE
+  CAREGIVER
+  FRIEND
+  OTHER
+}
+
+enum DoctorRole {
+  PCP
+  SPECIALIST
+}
+
+enum MedicationForm {
+  TABLET
+  CAPSULE
+  LIQUID
+  INJECTION
+  INHALER
+  TOPICAL
+  PATCH
+  DROPS
+  OTHER
+}
+
+enum InsuranceStatus {
+  APPLICATION_PENDING
+  ACTIVE
+  ENDED
+  CANCELLED
+  DENIED
+}
+
+enum ReminderPriority {
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum ReminderStatus {
+  PENDING
+  DONE
+  CANCELLED
+}
+
+enum ConsentStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+enum ConsentMethod {
+  IN_PERSON
+  PHONE
+  ELECTRONIC
+  PAPER
+}
+
+model Client {
+  id          String    @id @default(cuid())
+  firstName   String
+  lastName    String
+  dateOfBirth DateTime? @db.Date
+  email       String?
+
+  /// Solo dígitos (10).
+  primaryPhone                String?
+  altPhone                    String?
+  altContactName              String?
+  altContactRelationship      ContactRelationship?
+  altContactRelationshipOther String?
+
+  preferredLanguage PreferredLanguage @default(ES)
+
+  homeStreet String?
+  homeUnit   String?
+  homeCity   String?
+  homeState  String?
+  homeZip    String?
+
+  mailingSameAsHome Boolean @default(true)
+  mailingStreet     String?
+  mailingUnit       String?
+  mailingCity       String?
+  mailingState      String?
+  mailingZip        String?
+
+  status          ClientStatus @default(NEW)
+  assignedAgentId String?
+  assignedAgent   User?        @relation("ClientAssignedAgent", fields: [assignedAgentId], references: [id], onDelete: Restrict)
+  createdById     String
+  createdBy       User         @relation("ClientCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  deletedAt       DateTime?
+
+  programs    ClientProgramEnrollment[]
+  insurances  ClientInsurance[]
+  conditions  ClientCondition[]
+  doctors     ClientDoctor[]
+  medications ClientMedication[]
+  notes       Note[]
+  reminders   Reminder[]
+  documents   Document[]
+  consents    ClientConsent[]
+  activity    ActivityLog[]
+
+  @@index([status])
+  @@index([assignedAgentId])
+  @@index([createdAt])
+  @@index([deletedAt])
+  @@index([lastName, firstName])
+  @@index([primaryPhone])
+  @@index([altPhone])
+  @@index([firstName(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_first_name_trgm_idx")
+  @@index([lastName(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_last_name_trgm_idx")
+  @@index([email(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_email_trgm_idx")
+  @@map("clients")
+}
+
+/// Programas del cliente (puede tener varios, p. ej. Medicare + Medicaid).
+/// Datos del BENEFICIARIO, independientes de la aseguradora: no cambian al cambiar de plan.
+model ClientProgramEnrollment {
+  id        String          @id @default(cuid())
+  clientId  String
+  client    Client          @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  programId String
+  program   CoverageProgram @relation(fields: [programId], references: [id], onDelete: Restrict)
+
+  /// Medicare: MBI. Medicaid: número de Medicaid. ACA: normalmente vacío.
+  beneficiaryNumberEnc   String?
+  beneficiaryNumberIdx   String?
+  beneficiaryNumberLast4 String?
+
+  /// Solo Medicare.
+  partAEffectiveDate DateTime? @db.Date
+  partBEffectiveDate DateTime? @db.Date
+
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@unique([clientId, programId], where: raw("\"deletedAt\" IS NULL"), map: "enrollments_one_active_per_program")
+  @@index([programId])
+  @@index([beneficiaryNumberIdx])
+  @@map("client_program_enrollments")
+}
+
+/// Cobertura con una aseguradora. HISTORIAL: un cambio de aseguradora cierra el registro
+/// anterior (endDate, isCurrent=false) y crea uno nuevo que apunta al anterior.
+model ClientInsurance {
+  id        String           @id @default(cuid())
+  clientId  String
+  client    Client           @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  programId String
+  program   CoverageProgram  @relation(fields: [programId], references: [id], onDelete: Restrict)
+  carrierId String
+  carrier   InsuranceCarrier @relation(fields: [carrierId], references: [id], onDelete: Restrict)
+  planName  String?
+
+  memberNumberEnc         String?
+  memberNumberIdx         String?
+  memberNumberLast4       String?
+  confirmationNumberEnc   String?
+  confirmationNumberIdx   String?
+  confirmationNumberLast4 String?
+
+  applicationSubmittedAt DateTime?       @db.Date
+  effectiveDate          DateTime?       @db.Date
+  endDate                DateTime?       @db.Date
+  status                 InsuranceStatus @default(APPLICATION_PENDING)
+  isCurrent              Boolean         @default(true)
+  changeReason           String?
+
+  /// Cobertura que esta reemplaza (cadena del historial).
+  replacesInsuranceId String?          @unique
+  replaces            ClientInsurance? @relation("InsuranceHistory", fields: [replacesInsuranceId], references: [id], onDelete: Restrict)
+  replacedBy          ClientInsurance? @relation("InsuranceHistory")
+
+  writingAgentId String?
+  writingAgent   User?     @relation("InsuranceWritingAgent", fields: [writingAgentId], references: [id], onDelete: Restrict)
+  createdById    String
+  createdBy      User      @relation("InsuranceCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  @@unique([clientId, programId], where: raw("\"isCurrent\" AND \"deletedAt\" IS NULL"), map: "insurances_one_current_per_program")
+  @@index([clientId])
+  @@index([programId])
+  @@index([carrierId])
+  @@index([status])
+  @@index([effectiveDate])
+  @@index([memberNumberIdx])
+  @@index([confirmationNumberIdx])
+  @@map("client_insurances")
+}
+
+model ClientCondition {
+  id          String            @id @default(cuid())
+  clientId    String
+  client      Client            @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  /// Del catálogo (permite filtrar). Si no existe en el catálogo se usa customName.
+  conditionId String?
+  condition   ChronicCondition? @relation(fields: [conditionId], references: [id], onDelete: Restrict)
+  customName  String?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
+
+  @@unique([clientId, conditionId], where: raw("\"deletedAt\" IS NULL AND \"conditionId\" IS NOT NULL"), map: "client_conditions_unique_active")
+  @@index([conditionId])
+  @@index([clientId])
+  @@map("client_conditions")
+}
+
+model ClientDoctor {
+  id        String     @id @default(cuid())
+  clientId  String
+  client    Client     @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  doctorId  String
+  doctor    Doctor     @relation(fields: [doctorId], references: [id], onDelete: Restrict)
+  role      DoctorRole
+  notes     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  deletedAt DateTime?
+
+  prescriptions ClientMedication[]
+
+  /// Un solo médico primario (PCP) activo por cliente.
+  @@unique([clientId], where: raw("role = 'PCP' AND \"deletedAt\" IS NULL"), map: "client_doctors_one_active_pcp")
+  @@unique([clientId, doctorId], where: raw("\"deletedAt\" IS NULL"), map: "client_doctors_unique_active")
+  @@index([doctorId])
+  @@map("client_doctors")
+}
+
+model ClientMedication {
+  id                       String          @id @default(cuid())
+  clientId                 String
+  client                   Client          @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  medicationId             String
+  medication               Medication      @relation(fields: [medicationId], references: [id], onDelete: Restrict)
+  dose                     String?
+  frequency                String?
+  form                     MedicationForm?
+  formOther                String?
+  /// Médico del cliente que lo prescribe (opcional).
+  prescriberClientDoctorId String?
+  prescriber               ClientDoctor?   @relation(fields: [prescriberClientDoctorId], references: [id], onDelete: Restrict)
+  notes                    String?
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @updatedAt
+  deletedAt                DateTime?
+
+  @@index([clientId])
+  @@index([medicationId])
+  @@map("client_medications")
+}
+
+/// Notas de seguimiento. Cada nota es un registro independiente; editar no borra el historial
+/// (los cambios quedan en ActivityLog).
+model Note {
+  id          String    @id @default(cuid())
+  clientId    String
+  client      Client    @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  authorId    String
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  body        String
+  isImportant Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  @@index([clientId, createdAt])
+  @@index([authorId])
+  @@map("notes")
+}
+
+model Reminder {
+  id           String           @id @default(cuid())
+  clientId     String
+  client       Client           @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  assignedToId String
+  assignedTo   User             @relation("ReminderAssignedTo", fields: [assignedToId], references: [id], onDelete: Restrict)
+  createdById  String
+  createdBy    User             @relation("ReminderCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  description  String
+  dueAt        DateTime
+  priority     ReminderPriority @default(NORMAL)
+  status       ReminderStatus   @default(PENDING)
+  completedAt  DateTime?
+  cancelledAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@index([assignedToId, status, dueAt])
+  @@index([clientId])
+  @@map("reminders")
+}
+
+/// Documentos del cliente (interfaz en una etapa posterior). El archivo vive cifrado en
+/// almacenamiento privado; aquí solo hay metadatos.
+model Document {
+  id           String    @id @default(cuid())
+  clientId     String
+  client       Client    @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  storageKey   String    @unique
+  fileName     String
+  mimeType     String
+  sizeBytes    Int
+  sha256       String
+  uploadedById String
+  uploadedBy   User      @relation(fields: [uploadedById], references: [id], onDelete: Restrict)
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+
+  consents ClientConsent[]
+
+  @@index([clientId])
+  @@map("documents")
+}
+
+/// Scope of Appointment y consentimientos de contacto (interfaz en una etapa posterior).
+model ClientConsent {
+  id            String        @id @default(cuid())
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  consentTypeId String
+  consentType   ConsentType   @relation(fields: [consentTypeId], references: [id], onDelete: Restrict)
+  status        ConsentStatus @default(ACTIVE)
+  method        ConsentMethod
+  obtainedAt    DateTime
+  expiresAt     DateTime?
+  renewalDueAt  DateTime?
+  /// SOA: fecha/hora de la cita a la que aplica.
+  appointmentAt DateTime?
+  /// SOA: productos que se acordó tratar (lista de códigos).
+  scope         Json?
+  documentId    String?
+  document      Document?     @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  recordedById  String
+  recordedBy    User          @relation(fields: [recordedById], references: [id], onDelete: Restrict)
+  revokedAt     DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([clientId, consentTypeId])
+  @@index([expiresAt])
+  @@map("client_consents")
+}

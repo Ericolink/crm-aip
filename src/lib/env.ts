@@ -6,6 +6,13 @@ import { z } from "zod";
  * Si falta una variable o tiene formato inválido, la app falla al arrancar con un
  * mensaje que nombra la variable, pero NUNCA imprime su valor.
  */
+/** Llave de 32 bytes codificada en base64 (AES-256 / HMAC-SHA256). */
+function base64Key32() {
+  return z.string().refine((v) => Buffer.from(v, "base64").length === 32, {
+    message: "Debe ser una llave de 32 bytes en base64",
+  });
+}
+
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   DATABASE_URL: z
@@ -16,6 +23,8 @@ const serverEnvSchema = z.object({
     }),
   BETTER_AUTH_SECRET: z.string().min(32, { message: "Debe tener al menos 32 caracteres" }),
   BETTER_AUTH_URL: z.string().url(),
+  FIELD_ENCRYPTION_KEY: base64Key32(),
+  BLIND_INDEX_KEY: base64Key32(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
