@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import { Suspense, type ReactNode } from "react";
 import { Toaster } from "sonner";
+import { GlobalSearch } from "@/components/app-shell/global-search";
 import { IdleTimeout } from "@/components/app-shell/idle-timeout";
 import { SidebarNav, type NavItem } from "@/components/app-shell/sidebar-nav";
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
@@ -35,8 +36,9 @@ async function AuthenticatedShell({ children }: { children: ReactNode }) {
       : []),
   ];
   const secondary: NavItem[] = [
-    ...(hasPermission(user, PERMISSIONS.SETTINGS_MANAGE)
-      ? [{ key: "settings", href: "/settings", available: false } as const]
+    ...(hasPermission(user, PERMISSIONS.SETTINGS_MANAGE) ||
+    hasPermission(user, PERMISSIONS.USER_MANAGE)
+      ? [{ key: "settings", href: "/settings", available: true } as const]
       : []),
     { key: "account", href: "/account", available: true },
   ];
@@ -74,7 +76,8 @@ async function AuthenticatedShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-[999_1_560px] flex-col">
-        <header className="border-border bg-surface flex flex-wrap items-center justify-end gap-3 border-b px-4 py-3.5 sm:px-8">
+        <header className="border-border bg-surface flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3.5 sm:px-8">
+          <GlobalSearch />
           <LocaleSwitcher />
         </header>
         <main className="w-full max-w-[1280px] px-4 py-6 sm:px-8 sm:py-7">{children}</main>

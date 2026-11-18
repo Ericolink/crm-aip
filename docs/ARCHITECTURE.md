@@ -1,7 +1,7 @@
 # CRM de seguros médicos — Arquitectura y planificación
 
 > Documento vivo. Registra las decisiones técnicas aprobadas. Última actualización: 2026-11-18.
-> Estado: Fases 1–2 aprobadas · Etapas 0–2 completadas · **Etapa 3 (CRUD de clientes) completada** · Siguiente: Etapa 4 (búsqueda, filtros y estatus en la tabla).
+> Estado: Fases 1–2 aprobadas · Etapas 0–3 completadas · Vínculos asistente↔agente implementados · **Etapa 4 (búsqueda, filtros, orden y estatus en la tabla) en revisión** · Etapa 5 pendiente de aprobación.
 > Decisiones detalladas en [`docs/adr/`](adr/).
 
 **Aviso:** este sistema se diseña considerando los requisitos de HIPAA (Privacy & Security Rules), pero **no se afirma que sea "HIPAA compliant"** hasta que su infraestructura, proveedores (BAA), contratos, controles y procedimientos sean revisados y validados formalmente.
@@ -10,15 +10,17 @@
 
 ## 1. Decisiones aprobadas
 
-| #   | Tema                     | Decisión                                                                                                                                                                                                                                            |
-| --- | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| D1  | Arquitectura             | Monolito modular en TypeScript (Next.js App Router). Capas: UI → acciones → servicios (validación, permisos, auditoría) → repositorios → PostgreSQL.                                                                                                |
-| D2  | Base de datos local      | **Docker Desktop + PostgreSQL** mediante `docker-compose.yml`. Puerto ligado solo a `127.0.0.1`. Volumen persistente. Scripts `npm run db:up`, `db:down`, `db:reset`.                                                                               |
-| D3  | Aseguradoras ↔ programas | **100 % configurable desde el CRM** (Configuración → Aseguradoras). El seed crea las 5 aseguradoras y los 3 programas **sin relaciones entre ellos**; no se asume qué compañía ofrece qué programa. Se pueden crear aseguradoras exclusivas de ACA. |
-| D4  | Idioma                   | **Bilingüe EN/ES.** Selector en la barra superior. El idioma se guarda en el perfil del usuario (`User.preferredLocale`) y en una cookie (para la pantalla de login).                                                                               |
-| D5  | Condiciones crónicas     | **Lista múltiple** por cliente, CRUD individual, basada en un catálogo para poder filtrar en el futuro.                                                                                                                                             |
-| D6  | Hosting                  | Solo local por ahora. Comparación de proveedores con BAA cuando exista una versión funcional. Nada de datos reales hasta entonces.                                                                                                                  |
-| D7  | SOA y consentimientos    | Las tablas se incluyen **desde el esquema inicial** (sin interfaz completa en v1) para no cambiar la base de datos después.                                                                                                                         |
+| #   | Tema                     | Decisión                                                                                                                                                                                                                                                                                                             |
+| --- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Arquitectura             | Monolito modular en TypeScript (Next.js App Router). Capas: UI → acciones → servicios (validación, permisos, auditoría) → repositorios → PostgreSQL.                                                                                                                                                                 |
+| D2  | Base de datos local      | **Docker Desktop + PostgreSQL** mediante `docker-compose.yml`. Puerto ligado solo a `127.0.0.1`. Volumen persistente. Scripts `npm run db:up`, `db:down`, `db:reset`.                                                                                                                                                |
+| D3  | Aseguradoras ↔ programas | **100 % configurable desde el CRM** (Configuración → Aseguradoras). El seed crea las 5 aseguradoras y los 3 programas **sin relaciones entre ellos**; no se asume qué compañía ofrece qué programa. Se pueden crear aseguradoras exclusivas de ACA.                                                                  |
+| D4  | Idioma                   | **Bilingüe EN/ES.** Selector en la barra superior. El idioma se guarda en el perfil del usuario (`User.preferredLocale`) y en una cookie (para la pantalla de login).                                                                                                                                                |
+| D5  | Condiciones crónicas     | **Lista múltiple** por cliente, CRUD individual, basada en un catálogo para poder filtrar en el futuro.                                                                                                                                                                                                              |
+| D6  | Hosting                  | Solo local por ahora. Comparación de proveedores con BAA cuando exista una versión funcional. Nada de datos reales hasta entonces.                                                                                                                                                                                   |
+| D8  | Asistentes               | **Vinculados a uno o varios agentes** (tabla `assistant_agent_links`, N:M). El asistente ve los clientes de sus agentes vinculados activos y mantiene sus permisos (solo contacto y dirección). Desactivar el vínculo o al agente quita el acceso en la siguiente petición. Lo administra quien tenga `user.manage`. |
+| D9  | Orden de etapas          | La configuración aseguradoras × programas se **adelanta a la Etapa 5**, antes de registrar coberturas.                                                                                                                                                                                                               |
+| D7  | SOA y consentimientos    | Las tablas se incluyen **desde el esquema inicial** (sin interfaz completa en v1) para no cambiar la base de datos después.                                                                                                                                                                                          |
 
 ## 2. Stack
 
@@ -76,6 +78,7 @@ tests/ unit · integration · e2e
 
 - `User` (name, email, roleId, isActive, preferredLocale, mfaEnabled, lastLoginAt)
 - `Role`, `Permission`, `RolePermission` — roles y permisos en BD
+- `AssistantAgentLink` (assistantId, agentId, isActive, createdById, deactivatedAt) — vínculo N:M asistente ↔ agente; único por par; no se borra, se desactiva
 - `Session`, `Account`, `Verification` — librería de auth
 
 ### Catálogos configurables
@@ -90,7 +93,7 @@ tests/ unit · integration · e2e
 
 ### Cliente
 
-- `Client` — datos personales, domicilio, dirección postal + `mailingSameAsHome`, teléfonos, contacto alternativo + relación, email, `preferredLanguage`, `status` (NEW · PENDING · ACTIVE · URGENT), `assignedAgentId`, `createdById`, `createdAt`, `updatedAt`, `deletedAt`
+- `Client` — datos personales, domicilio, dirección postal + `mailingSameAsHome`, teléfonos, contacto alternativo + relación, email, `preferredLanguage`, `status` (NEW · PENDING · ACTIVE · URGENT), `assignedAgentId`, `createdById`, `createdAt`, `updatedAt`, `deletedAt`. Columnas derivadas mantenidas por triggers: `searchName` (búsqueda sin acentos) y `currentEffectiveDate` (orden y filtro por fecha efectiva)
 - `ClientProgramEnrollment` (clientId, programId, beneficiaryNumber 🔒, partAStart?, partBStart?, notes) — único por (cliente, programa)
 - `ClientCondition` (clientId, conditionId?, customName?, notes, createdAt) — `conditionId` del catálogo para filtrar; `customName` si no existe en el catálogo
 - `ClientInsurance` (clientId, programId, carrierId, planName, memberNumber 🔒, confirmationNumber 🔒, applicationSubmittedAt, effectiveDate, endDate, status, isCurrent, changeReason, replacesInsuranceId, writingAgentId) — **historial sin sobrescritura**; validación: la aseguradora debe estar relacionada con el programa en `CarrierProgram`
@@ -107,7 +110,7 @@ tests/ unit · integration · e2e
 ### Trazabilidad
 
 - `ActivityLog` — historial de negocio por cliente (`{campo: {antes, después}}`; los campos sensibles solo registran "modificado"). **Solo inserción.**
-- `AuditLog` — seguridad: logins, revelación de datos sensibles, exportaciones, importaciones, accesos
+- `AuditLog` — seguridad: logins, revelación de datos sensibles, búsquedas por identificador, exportaciones, importaciones, accesos. `dedupeKey` (único) evita duplicar eventos de consulta por el doble render de Next
 - `ImportJob`, `ExportJob`
 
 ### Futuro sin cambios estructurales
@@ -118,7 +121,7 @@ tests/ unit · integration · e2e
 
 Cifrado de identificadores · máscara `•••• 1234` + permiso para revelar (auditado) · alcance de datos por agente en cada consulta · Zod con listas cerradas de campos · 2FA, rate limiting, cookies seguras · inactividad 15 min / sesión máxima 12 h · logger sin PHI, sin analítica de terceros · CSP, sin `dangerouslySetInnerHTML` · neutralizar fórmulas en exportaciones · límites en importación · `.env` fuera de git · backups cifrados con prueba de restauración · solo datos ficticios en desarrollo · checklist de proveedores con BAA antes de producción.
 
-## 7. Fase 2 — Diseño (en revisión)
+## 7. Fase 2 — Diseño (aprobada)
 
 Lienzo de diseño: https://claude.ai/artifact/3ZRgsmA5CoKWZVEZ8uiuHW (privado). Pantallas: sistema visual y mapa de navegación, login + 2FA, dashboard, tabla de clientes, perfil (6 pestañas), formulario por secciones, configuración aseguradoras × programas, perfil en celular.
 
@@ -128,4 +131,11 @@ Identidad: Inter; primario `#2346A8`; fondo `#F5F6F8`; estatus Nuevo (azul), Pen
 
 0. Fundaciones (git, Next.js, Docker Compose, lint, i18n base, ADRs)
    — **Fase 2: Diseño (aprobación requerida)** —
-1. Autenticación y roles · 2. Esquema de BD + cifrado + seed ficticio · 3. CRUD clientes · 4. Estatus, tabla y filtros · 5. Perfil + aseguranzas con historial · 6. Médicos · 7. Medicamentos · 8. Notas + actividad · 9. Dashboard · 10. Recordatorios · 11. Importar/exportar · 12. Configuración (aseguradoras, programas, condiciones, usuarios) · 13. Endurecimiento, pruebas y checklist HIPAA
+1. ✅ Autenticación y roles
+2. ✅ Esquema de BD + cifrado + seed ficticio
+3. ✅ CRUD de clientes · ✅ Vínculos asistente ↔ agente (Configuración → Usuarios)
+4. Búsqueda, filtros combinados, orden y estatus desde la tabla — **en revisión**
+5. **Configuración de aseguradoras × programas** (alta, edición, activar/desactivar y relaciones con Medicare/Medicaid/ACA) + Perfil con 6 pestañas + aseguranzas con historial
+6. Médicos · 7. Medicamentos · 8. Notas + actividad · 9. Dashboard · 10. Recordatorios · 11. Importar/exportar
+7. Administración de usuarios (crear, roles, desactivar), condiciones crónicas y tipos de consentimiento
+8. Endurecimiento, pruebas y checklist HIPAA

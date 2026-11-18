@@ -304,6 +304,101 @@
       "confirm": "Eliminar cliente",
       "cancel": "Cancelar",
       "deleting": "Eliminando…"
+    },
+    "filters": {
+      "searchLabel": "Buscar clientes",
+      "searchPlaceholder": "Nombre, apellido, teléfono o correo",
+      "searchPlaceholderIds": "Nombre, teléfono, correo o número de miembro / confirmación",
+      "identifierNote": "La búsqueda por número de miembro, confirmación, Medicare o Medicaid es exacta y queda registrada en la auditoría.",
+      "statusGroup": "Filtrar por estatus",
+      "all": "Todos",
+      "program": "Programa",
+      "carrier": "Aseguradora",
+      "agent": "Agente",
+      "condition": "Condición crónica",
+      "any": "Todos",
+      "more": "Más filtros",
+      "less": "Menos filtros",
+      "createdFrom": "Creado desde",
+      "createdTo": "Creado hasta",
+      "effectiveFrom": "Fecha efectiva desde",
+      "effectiveTo": "Fecha efectiva hasta",
+      "sort": "Ordenar por",
+      "sorts": {
+        "created_desc": "Más recientes primero",
+        "created_asc": "Más antiguos primero",
+        "effective_asc": "Fecha efectiva (próxima primero)",
+        "effective_desc": "Fecha efectiva (más lejana primero)",
+        "name_asc": "Apellido (A–Z)"
+      },
+      "sortBy": "Ordenar por {column}",
+      "active": "Filtros activos:",
+      "remove": "Quitar filtro: {label}",
+      "clear": "Limpiar filtros",
+      "searchChip": "Búsqueda: “{q}”",
+      "emptyTitle": "No hay clientes con estos filtros",
+      "emptyBody": "Prueba con otra búsqueda o quita algún filtro.",
+      "results": "{count, plural, =0 {Sin resultados} one {# resultado} other {# resultados}}",
+      "agentColumn": "Agente"
+    },
+    "statusMenu": {
+      "label": "Cambiar estatus de {name}",
+      "changed": "Estatus actualizado: {status}.",
+      "current": "actual"
     }
+  },
+  "Settings": {
+    "title": "Configuración",
+    "nav": {
+      "label": "Secciones de configuración",
+      "users": "Usuarios y vínculos",
+      "carriers": "Aseguradoras y programas",
+      "conditions": "Condiciones crónicas",
+      "consents": "Tipos de consentimiento",
+      "soon": "Pronto"
+    },
+    "users": {
+      "title": "Usuarios y vínculos",
+      "subtitle": "Vincula a cada asistente con los agentes a los que apoya. El asistente ve y actualiza (contacto y dirección) solo los clientes de sus agentes vinculados.",
+      "managementSoon": "Crear usuarios, cambiar roles y desactivar cuentas llega en la etapa de administración.",
+      "columns": {
+        "user": "Usuario",
+        "role": "Rol",
+        "status": "Estado",
+        "lastLogin": "Último acceso",
+        "clients": "Clientes asignados",
+        "links": "Vínculos"
+      },
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "never": "Nunca",
+      "linkedAgents": "Apoya a:",
+      "linkedAssistants": "Asistentes:",
+      "noLinks": "Sin vínculos",
+      "chooseAgent": "Agente a vincular",
+      "link": "Vincular",
+      "remove": "Quitar vínculo con {name}",
+      "confirmTitle": "¿Quitar el vínculo?",
+      "confirmBody": "{assistant} dejará de ver los clientes de {agent} de inmediato. El vínculo queda registrado en la auditoría.",
+      "confirm": "Quitar vínculo",
+      "cancel": "Cancelar",
+      "removing": "Quitando…",
+      "toast": {
+        "linked": "Vínculo creado.",
+        "unlinked": "Vínculo eliminado."
+      },
+      "errors": {
+        "forbidden": "No tienes permiso para administrar usuarios.",
+        "notFound": "El vínculo ya no existe.",
+        "invalid": "La combinación de usuarios no es válida.",
+        "generic": "No se pudo completar la acción. Inténtalo de nuevo.",
+        "conflict": "El vínculo ya existe."
+      }
+    }
+  },
+  "GlobalSearch": {
+    "label": "Buscar cliente",
+    "placeholder": "Buscar cliente: nombre, teléfono, correo…",
+    "shortcut": "Atajo: Ctrl K"
   }
 }

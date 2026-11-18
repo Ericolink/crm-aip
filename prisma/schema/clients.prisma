@@ -122,6 +122,11 @@ model Client {
   updatedAt       DateTime     @updatedAt
   deletedAt       DateTime?
 
+  /// Nombre normalizado para búsqueda (minúsculas, sin acentos). Lo mantiene un TRIGGER de la base.
+  searchName           String    @default("")
+  /// Fecha efectiva más próxima de las coberturas actuales. La mantiene un TRIGGER de la base.
+  currentEffectiveDate DateTime? @db.Date
+
   programs    ClientProgramEnrollment[]
   insurances  ClientInsurance[]
   conditions  ClientCondition[]
@@ -140,8 +145,8 @@ model Client {
   @@index([lastName, firstName])
   @@index([primaryPhone])
   @@index([altPhone])
-  @@index([firstName(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_first_name_trgm_idx")
-  @@index([lastName(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_last_name_trgm_idx")
+  @@index([searchName(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_search_name_trgm_idx")
+  @@index([currentEffectiveDate])
   @@index([email(ops: raw("gin_trgm_ops"))], type: Gin, map: "clients_email_trgm_idx")
   @@map("clients")
 }

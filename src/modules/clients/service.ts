@@ -8,6 +8,7 @@ import { prisma } from "@/lib/db";
 import { describeDbErrorForLog, toSafeDbError } from "@/lib/db-errors";
 import { parseDateOnly, toDateInputValue } from "@/lib/format";
 import { PERMISSIONS, type PermissionKey } from "@/lib/permissions/catalog";
+import { ServiceError } from "@/lib/service-error";
 import type { Prisma } from "@/generated/prisma/client";
 import {
   canEditMedicalAndPrograms,
@@ -17,7 +18,16 @@ import {
   FULL_CLIENT_FIELDS,
   type ClientField,
 } from "./access";
+import { DEFAULT_SORT, type ClientListParams } from "./list-params";
 import {
+  buildClientWhere,
+  canSearchIdentifiers,
+  clientOrderBy,
+  identifierCandidate,
+  type IdentifierIndexes,
+} from "./search";
+import {
+  CLIENT_STATUSES,
   emptyClientForm,
   PROGRAM_CODES,
   type ClientFormInput,
@@ -30,16 +40,7 @@ import {
  * Cada función recibe el usuario actual y aplica permisos y visibilidad.
  */
 
-export type ServiceErrorCode = "FORBIDDEN" | "NOT_FOUND" | "CONFLICT" | "INVALID";
-
-export class ServiceError extends Error {
-  constructor(
-    public readonly code: ServiceErrorCode,
-    public readonly field?: string,
-  ) {
-    super(code);
-  }
-}
+export { ServiceError };
 
 async function deny(user: CurrentUser, permission: PermissionKey): Promise<never> {
   await recordAudit({
@@ -75,19 +76,59 @@ export type ClientListItem = {
   programs: string[];
   currentCarrier: string | null;
   effectiveDate: Date | null;
+  assignedAgentName: string | null;
   createdAt: Date;
 };
 
+export type ClientListResult = {
+  items: ClientListItem[];
+  total: number;
+  /** Conteo por estatus con los demás filtros aplicados (para las pastillas de estatus). */
+  statusCounts: Record<string, number>;
+};
+
+/**
+ * Lista con búsqueda, filtros combinados, orden y paginación.
+ * La búsqueda por identificadores sensibles solo se activa para quien puede revelarlos,
+ * y se registra en auditoría SIN el valor buscado.
+ */
 export async function listClients(
   user: CurrentUser,
-  options: { page: number; pageSize: number },
-): Promise<{ items: ClientListItem[]; total: number }> {
-  const where = clientVisibilityWhere(user);
-  const [total, rows] = await Promise.all([
+  options: Partial<ClientListParams> & { page: number; pageSize: number },
+): Promise<ClientListResult> {
+  const params: ClientListParams = {
+    statuses: [],
+    sort: DEFAULT_SORT,
+    ...options,
+  };
+
+  let identifierIndexes: IdentifierIndexes | null = null;
+  const candidate = params.q ? identifierCandidate(params.q) : null;
+  if (candidate && canSearchIdentifiers(user)) {
+    const protector = getFieldProtector();
+    identifierIndexes = {
+      beneficiary: protector.blindIndex(SENSITIVE_FIELDS.BENEFICIARY_NUMBER, candidate),
+      member: protector.blindIndex(SENSITIVE_FIELDS.MEMBER_NUMBER, candidate),
+      confirmation: protector.blindIndex(SENSITIVE_FIELDS.CONFIRMATION_NUMBER, candidate),
+    };
+    await recordAudit({
+      action: "IDENTIFIER_SEARCH",
+      outcome: "SUCCESS",
+      actorId: user.id,
+      metadata: { length: candidate.length },
+      dedupeWindowSeconds: 10,
+      dedupeDiscriminator: identifierIndexes.member,
+    });
+  }
+
+  const where = buildClientWhere(user, params, { identifierIndexes });
+  const countWhere = buildClientWhere(user, params, { identifierIndexes, ignoreStatus: true });
+
+  const [total, rows, grouped] = await Promise.all([
     prisma.client.count({ where }),
     prisma.client.findMany({
       where,
-      orderBy: { createdAt: "desc" },
+      orderBy: clientOrderBy(params.sort),
       skip: (options.page - 1) * options.pageSize,
       take: options.pageSize,
       select: {
@@ -98,19 +139,27 @@ export async function listClients(
         preferredLanguage: true,
         status: true,
         createdAt: true,
-        programs: { where: { deletedAt: null }, select: { program: { select: { code: true } } } },
+        currentEffectiveDate: true,
+        assignedAgent: { select: { name: true } },
+        programs: {
+          where: { deletedAt: null },
+          orderBy: { program: { sortOrder: "asc" } },
+          select: { program: { select: { code: true } } },
+        },
         insurances: {
           where: { isCurrent: true, deletedAt: null },
-          orderBy: { createdAt: "desc" },
+          orderBy: { effectiveDate: { sort: "asc", nulls: "last" } },
           take: 1,
-          select: { effectiveDate: true, carrier: { select: { name: true } } },
+          select: { carrier: { select: { name: true } } },
         },
       },
     }),
+    prisma.client.groupBy({ by: ["status"], where: countWhere, _count: { _all: true } }),
   ]);
 
   return {
     total,
+    statusCounts: Object.fromEntries(grouped.map((g) => [g.status, g._count._all])),
     items: rows.map((r) => ({
       id: r.id,
       firstName: r.firstName,
@@ -120,10 +169,44 @@ export async function listClients(
       status: r.status,
       programs: r.programs.map((p) => p.program.code),
       currentCarrier: r.insurances[0]?.carrier.name ?? null,
-      effectiveDate: r.insurances[0]?.effectiveDate ?? null,
+      effectiveDate: r.currentEffectiveDate,
+      assignedAgentName: r.assignedAgent?.name ?? null,
       createdAt: r.createdAt,
     })),
   };
+}
+
+/** Opciones de los filtros según lo que el usuario puede ver. */
+export async function getClientListOptions(user: CurrentUser) {
+  const seesAll = user.permissions.has(PERMISSIONS.CLIENT_READ_ALL);
+  const linked = user.linkedAgentIds ?? [];
+  const [programs, carriers, conditions, agents] = await Promise.all([
+    prisma.coverageProgram.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      select: { code: true, nameEs: true, nameEn: true },
+    }),
+    prisma.insuranceCarrier.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true },
+    }),
+    prisma.chronicCondition.findMany({
+      where: { isActive: true },
+      orderBy: { sortOrder: "asc" },
+      select: { id: true, nameEs: true, nameEn: true },
+    }),
+    seesAll || linked.length
+      ? prisma.user.findMany({
+          where: seesAll
+            ? { role: { key: { in: ["ADMIN", "AGENT"] } } }
+            : { id: { in: [...linked] } },
+          orderBy: { name: "asc" },
+          select: { id: true, name: true },
+        })
+      : Promise.resolve([]),
+  ]);
+  return { programs, carriers, conditions, agents };
 }
 
 const detailInclude = {
@@ -158,6 +241,7 @@ export async function getClientDetail(user: CurrentUser, clientId: string) {
     actorId: user.id,
     targetType: "client",
     targetId: client.id,
+    dedupeWindowSeconds: 10,
   });
   return toDetailDto(client);
 }
@@ -640,6 +724,40 @@ export async function updateClient(
         await syncPrograms(tx, clientId, user.id, values.programs);
         await syncConditions(tx, clientId, user.id, values.conditionIds, values.customConditions);
       }
+    });
+  } catch (error) {
+    rethrowDbError(error);
+  }
+}
+
+/** Cambio rápido de estatus (desde la tabla o el perfil). Requiere edición completa. */
+export async function updateClientStatus(
+  user: CurrentUser,
+  clientId: string,
+  status: (typeof CLIENT_STATUSES)[number],
+): Promise<void> {
+  if (!user.permissions.has(PERMISSIONS.CLIENT_UPDATE))
+    return deny(user, PERMISSIONS.CLIENT_UPDATE);
+  if (!(CLIENT_STATUSES as readonly string[]).includes(status))
+    throw new ServiceError("INVALID", "status");
+  const existing = await prisma.client.findFirst({
+    where: { id: clientId, ...clientVisibilityWhere(user) },
+    select: { id: true, status: true },
+  });
+  if (!existing) throw new ServiceError("NOT_FOUND");
+  if (existing.status === status) return;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.client.update({ where: { id: clientId }, data: { status } });
+      await recordActivity(tx, {
+        clientId,
+        actorId: user.id,
+        entityType: "client",
+        entityId: clientId,
+        action: "UPDATE",
+        changes: { status: { from: existing.status, to: status } },
+      });
     });
   } catch (error) {
     rethrowDbError(error);

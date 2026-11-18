@@ -9,8 +9,9 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  // pg_trgm: búsqueda rápida por nombre/correo con coincidencias parciales (ILIKE).
-  extensions = [pg_trgm]
+  // pg_trgm: búsqueda rápida con coincidencias parciales (ILIKE).
+  // unaccent: búsqueda sin acentos ("Maria" encuentra "María").
+  extensions = [pg_trgm, unaccent]
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -53,6 +54,11 @@ model User {
   activityLogs      ActivityLog[]
   importJobs        ImportJob[]
   exportJobs        ExportJob[]
+
+  // Vínculos asistente ↔ agente
+  assistantLinks AssistantAgentLink[] @relation("LinkAssistant")
+  agentLinks     AssistantAgentLink[] @relation("LinkAgent")
+  linksCreated   AssistantAgentLink[] @relation("LinkCreatedBy")
 
   @@index([roleId])
   @@map("users")
@@ -171,6 +177,27 @@ model RolePermission {
   @@map("role_permissions")
 }
 
+/// Un asistente apoya a uno o varios agentes (y un agente puede tener varios asistentes).
+/// El asistente ve y administra (según sus permisos) los clientes asignados a sus agentes
+/// vinculados ACTIVOS. Desactivar el vínculo quita el acceso en la siguiente petición.
+model AssistantAgentLink {
+  id            String    @id @default(cuid())
+  assistantId   String
+  assistant     User      @relation("LinkAssistant", fields: [assistantId], references: [id], onDelete: Restrict)
+  agentId       String
+  agent         User      @relation("LinkAgent", fields: [agentId], references: [id], onDelete: Restrict)
+  isActive      Boolean   @default(true)
+  createdById   String
+  createdBy     User      @relation("LinkCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deactivatedAt DateTime?
+
+  @@unique([assistantId, agentId])
+  @@index([agentId])
+  @@map("assistant_agent_links")
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Auditoría de seguridad (solo inserción; nunca guarda PHI ni contraseñas)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -192,6 +219,9 @@ model AuditLog {
   userAgent  String?
   /// Datos adicionales NO sensibles (validados por el servicio de auditoría).
   metadata   Json?
+  /// Evita registros duplicados de eventos de CONSULTA (Next puede renderizar una página
+  /// dos veces por petición). Formato: actor:acción:objetivo:ventana-de-tiempo. Null = sin deduplicar.
+  dedupeKey  String?  @unique
 
   @@index([actorId, createdAt])
   @@index([action, createdAt])

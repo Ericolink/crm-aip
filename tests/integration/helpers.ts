@@ -1,15 +1,22 @@
 import { randomUUID } from "node:crypto";
-import type { CurrentUser } from "@/lib/auth/session";
+import { loadCurrentUser, type CurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
-import { isPermissionKey } from "@/lib/permissions/catalog";
 import { emptyClientForm, type ClientFormInput } from "@/modules/clients/schema";
+
+/**
+ * Carga el usuario con la MISMA función que usa la sesión real en cada petición
+ * (permisos del rol + agentes vinculados activos).
+ */
+export async function asCurrentUser(userId: string): Promise<CurrentUser> {
+  const loaded = await loadCurrentUser(userId);
+  if (!loaded) throw new Error("usuario de prueba no encontrado");
+  const { isActive: _isActive, ...user } = loaded;
+  return user;
+}
 
 /** Crea un usuario de prueba con el rol indicado y lo devuelve como CurrentUser. */
 export async function createTestUser(roleKey: "ADMIN" | "AGENT" | "ASSISTANT", name: string) {
-  const role = await prisma.role.findUniqueOrThrow({
-    where: { key: roleKey },
-    include: { permissions: { include: { permission: true } } },
-  });
+  const role = await prisma.role.findUniqueOrThrow({ where: { key: roleKey } });
   const user = await prisma.user.create({
     data: {
       id: randomUUID(),
@@ -19,17 +26,7 @@ export async function createTestUser(roleKey: "ADMIN" | "AGENT" | "ASSISTANT", n
       twoFactorEnabled: true,
     },
   });
-  const current: CurrentUser = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    roleKey,
-    roleName: { es: role.nameEs, en: role.nameEn },
-    permissions: new Set(role.permissions.map((rp) => rp.permission.key).filter(isPermissionKey)),
-    preferredLocale: "es",
-    twoFactorEnabled: true,
-  };
-  return current;
+  return asCurrentUser(user.id);
 }
 
 /** Formulario de cliente ficticio con valores por defecto sobrescribibles. */

@@ -18,13 +18,29 @@ describe("visibilidad de clientes", () => {
     expect(clientVisibilityWhere(userWithRole("ADMIN"))).toEqual({ deletedAt: null });
   });
 
-  it("agente y asistente solo ven los clientes asignados a ellos", () => {
+  it("agente y asistente sin vínculos solo ven los clientes asignados a ellos", () => {
     for (const role of ["AGENT", "ASSISTANT"]) {
       expect(clientVisibilityWhere(userWithRole(role))).toEqual({
         deletedAt: null,
-        assignedAgentId: "u1",
+        assignedAgentId: { in: ["u1"] },
       });
     }
+  });
+
+  it("el asistente ve además los clientes de sus agentes vinculados", () => {
+    const assistant = {
+      ...userWithRole("ASSISTANT"),
+      linkedAgentIds: ["agentA", "agentB", "agentA"],
+    };
+    expect(clientVisibilityWhere(assistant)).toEqual({
+      deletedAt: null,
+      assignedAgentId: { in: ["u1", "agentA", "agentB"] },
+    });
+  });
+
+  it("los vínculos no amplían nada a quien ya ve todos", () => {
+    const admin = { ...userWithRole("ADMIN"), linkedAgentIds: ["agentA"] };
+    expect(clientVisibilityWhere(admin)).toEqual({ deletedAt: null });
   });
 });
 

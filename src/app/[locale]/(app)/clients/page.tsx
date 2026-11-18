@@ -1,20 +1,28 @@
-import { ChevronLeft, ChevronRight, ChevronRight as Open, Plus, Users } from "lucide-react";
+import { ArrowDown, ArrowUp, ChevronLeft, ChevronRight, Plus, SearchX, Users } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 import { Forbidden } from "@/components/forbidden";
 import { buttonClasses } from "@/components/ui/button";
 import { hasPermission, requireUser } from "@/lib/auth/session";
 import { formatDateOnly, formatPhone, initials } from "@/lib/format";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
 import { Link } from "@/i18n/navigation";
+import { clientEditScope } from "@/modules/clients/access";
+import { ClientFilters } from "@/modules/clients/components/client-filters";
 import { StatusBadge } from "@/modules/clients/components/status-badge";
-import { listClients } from "@/modules/clients/service";
+import { StatusMenu } from "@/modules/clients/components/status-menu";
+import {
+  clientListQuery,
+  hasActiveFilters,
+  PAGE_SIZE,
+  parseClientListParams,
+  type ClientListParams,
+  type ClientSort,
+} from "@/modules/clients/list-params";
+import { canSearchIdentifiers } from "@/modules/clients/search";
+import { getClientListOptions, listClients } from "@/modules/clients/service";
 
-const PAGE_SIZE = 25;
-
-/**
- * Lista de clientes (Etapa 3: paginación).
- * Búsqueda, filtros combinados, orden y cambio de estatus en la tabla llegan en la Etapa 4.
- */
+/** Lista de clientes: búsqueda, filtros combinados, orden, paginación y estatus editable. */
 export default async function ClientsPage({
   searchParams,
 }: {
@@ -25,19 +33,30 @@ export default async function ClientsPage({
 
   const t = await getTranslations("Clients");
   const locale = await getLocale();
-  const rawPage = Number((await searchParams).page);
-  const page = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
-  const { items, total } = await listClients(user, { page, pageSize: PAGE_SIZE });
+  const params = parseClientListParams(await searchParams);
+  const [{ items, total, statusCounts }, options] = await Promise.all([
+    listClients(user, { ...params, pageSize: PAGE_SIZE }),
+    getClientListOptions(user),
+  ]);
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-  const from = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
-  const to = Math.min(page * PAGE_SIZE, total);
+  const from = total === 0 ? 0 : (params.page - 1) * PAGE_SIZE + 1;
+  const to = Math.min(params.page * PAGE_SIZE, total);
+  const canChangeStatus = clientEditScope(user) === "full";
+  const showAgent = options.agents.length > 0;
+  const filtered = hasActiveFilters(params);
+  const createdFmt = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-US", {
+    timeZone: "America/New_York",
+    dateStyle: "short",
+  });
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">{t("title")}</h1>
-          <p className="text-muted mt-0.5">{t("subtitle", { count: total })}</p>
+          <p className="text-muted mt-0.5" aria-live="polite">
+            {filtered ? t("filters.results", { count: total }) : t("subtitle", { count: total })}
+          </p>
         </div>
         {hasPermission(user, PERMISSIONS.CLIENT_CREATE) && (
           <Link href="/clients/new" className={buttonClasses("primary")}>
@@ -47,43 +66,68 @@ export default async function ClientsPage({
         )}
       </div>
 
+      <ClientFilters
+        params={params}
+        options={options}
+        statusCounts={statusCounts}
+        canSearchIdentifiers={canSearchIdentifiers(user)}
+      />
+
       {total === 0 ? (
         <div className="border-border-strong bg-surface flex flex-col items-center gap-2 rounded-xl border border-dashed p-10 text-center">
           <div className="bg-primary-soft text-primary flex size-11 items-center justify-center rounded-xl">
-            <Users aria-hidden className="size-5" />
+            {filtered ? (
+              <SearchX aria-hidden className="size-5" />
+            ) : (
+              <Users aria-hidden className="size-5" />
+            )}
           </div>
-          <p className="font-semibold">{t("empty.title")}</p>
-          <p className="text-muted text-sm">{t("empty.body")}</p>
+          <p className="font-semibold">{filtered ? t("filters.emptyTitle") : t("empty.title")}</p>
+          <p className="text-muted text-sm">
+            {filtered ? t("filters.emptyBody") : t("empty.body")}
+          </p>
+          {filtered && (
+            <Link href="/clients" className={`${buttonClasses("secondary", "sm")} mt-2`}>
+              {t("filters.clear")}
+            </Link>
+          )}
         </div>
       ) : (
         <section className="border-border bg-surface rounded-xl border">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[860px] border-collapse text-[13px]">
+            <table className="w-full min-w-[960px] border-collapse text-[13px]">
               <thead>
                 <tr className="text-left text-xs font-semibold text-[#4a5366]">
-                  {(
-                    ["client", "status", "programs", "carrier", "effective", "created"] as const
-                  ).map((col) => (
-                    <th
-                      key={col}
-                      scope="col"
-                      className="border-border border-b bg-[#f8f9fb] px-3.5 py-2.5"
-                    >
-                      {t(`columns.${col}`)}
-                    </th>
-                  ))}
-                  <th scope="col" className="border-border border-b bg-[#f8f9fb] px-3.5 py-2.5">
+                  <SortableTh params={params} label={t("columns.client")} asc="name_asc" />
+                  <Th>{t("columns.status")}</Th>
+                  <Th>{t("columns.programs")}</Th>
+                  <Th>{t("columns.carrier")}</Th>
+                  <SortableTh
+                    params={params}
+                    label={t("columns.effective")}
+                    asc="effective_asc"
+                    desc="effective_desc"
+                  />
+                  {showAgent && <Th>{t("filters.agentColumn")}</Th>}
+                  <SortableTh
+                    params={params}
+                    label={t("columns.created")}
+                    asc="created_asc"
+                    desc="created_desc"
+                  />
+                  <Th>
                     <span className="sr-only">{t("columns.open", { name: "" })}</span>
-                  </th>
+                  </Th>
                 </tr>
               </thead>
               <tbody>
                 {items.map((c) => {
                   const name = `${c.firstName} ${c.lastName}`;
+                  const status = c.status as "NEW" | "PENDING" | "ACTIVE" | "URGENT";
                   return (
                     <tr
                       key={c.id}
-                      className={`border-b border-[#f1f3f6] ${c.status === "URGENT" ? "bg-[#fff8f7]" : ""}`}
+                      className={`border-b border-[#f1f3f6] ${status === "URGENT" ? "bg-[#fff8f7]" : ""}`}
                     >
                       <td className="px-3.5 py-3">
                         <div className="flex items-center gap-2.5">
@@ -107,10 +151,16 @@ export default async function ClientsPage({
                         </div>
                       </td>
                       <td className="px-3.5 py-3">
-                        <StatusBadge
-                          status={c.status}
-                          label={t(`status.${c.status}` as "status.NEW")}
-                        />
+                        {canChangeStatus ? (
+                          <StatusMenu
+                            key={`${c.id}-${status}`}
+                            clientId={c.id}
+                            clientName={name}
+                            status={status}
+                          />
+                        ) : (
+                          <StatusBadge status={status} label={t(`status.${status}`)} />
+                        )}
                       </td>
                       <td className="px-3.5 py-3">
                         <div className="flex flex-wrap gap-1">
@@ -128,19 +178,15 @@ export default async function ClientsPage({
                       <td className="px-3.5 py-3">
                         {formatDateOnly(c.effectiveDate, locale) || "—"}
                       </td>
-                      <td className="text-muted px-3.5 py-3">
-                        {new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-US", {
-                          timeZone: "America/New_York",
-                          dateStyle: "short",
-                        }).format(c.createdAt)}
-                      </td>
+                      {showAgent && <td className="px-3.5 py-3">{c.assignedAgentName ?? "—"}</td>}
+                      <td className="text-muted px-3.5 py-3">{createdFmt.format(c.createdAt)}</td>
                       <td className="px-3.5 py-3">
                         <Link
                           href={`/clients/${c.id}`}
                           aria-label={t("columns.open", { name })}
                           className="text-muted inline-flex size-8 items-center justify-center rounded-lg hover:bg-[#f1f3f7]"
                         >
-                          <Open aria-hidden className="size-4" />
+                          <ChevronRight aria-hidden className="size-4" />
                         </Link>
                       </td>
                     </tr>
@@ -152,13 +198,21 @@ export default async function ClientsPage({
           <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
             <p className="text-muted text-[13px]">{t("pagination.showing", { from, to, total })}</p>
             <nav aria-label={t("pagination.label")} className="flex gap-1.5">
-              <PageLink page={page - 1} disabled={page <= 1} label={t("pagination.prev")}>
+              <PageLink
+                href={clientListQuery(params, { page: params.page - 1 })}
+                disabled={params.page <= 1}
+                label={t("pagination.prev")}
+              >
                 <ChevronLeft aria-hidden className="size-4" />
               </PageLink>
               <span className="text-muted flex items-center px-2 text-[13px]">
-                {page} / {pages}
+                {params.page} / {pages}
               </span>
-              <PageLink page={page + 1} disabled={page >= pages} label={t("pagination.next")}>
+              <PageLink
+                href={clientListQuery(params, { page: params.page + 1 })}
+                disabled={params.page >= pages}
+                label={t("pagination.next")}
+              >
                 <ChevronRight aria-hidden className="size-4" />
               </PageLink>
             </nav>
@@ -169,19 +223,66 @@ export default async function ClientsPage({
   );
 }
 
+function Th({ children }: { children: ReactNode }) {
+  return (
+    <th scope="col" className="border-border border-b bg-[#f8f9fb] px-3.5 py-2.5">
+      {children}
+    </th>
+  );
+}
+
+/** Encabezado que ordena al hacer clic; alterna ascendente/descendente si ambos existen. */
+async function SortableTh({
+  params,
+  label,
+  asc,
+  desc,
+}: {
+  params: ClientListParams;
+  label: string;
+  asc: ClientSort;
+  desc?: ClientSort;
+}) {
+  const t = await getTranslations("Clients.filters");
+  const active = params.sort === asc || params.sort === desc;
+  const next: ClientSort = params.sort === asc && desc ? desc : asc;
+  const ariaSort = !active ? "none" : params.sort === asc ? "ascending" : "descending";
+  return (
+    <th
+      scope="col"
+      aria-sort={ariaSort}
+      className="border-border border-b bg-[#f8f9fb] px-3.5 py-2.5"
+    >
+      <Link
+        href={`/clients${clientListQuery(params, { sort: next })}`}
+        title={t("sortBy", { column: label })}
+        className={`inline-flex items-center gap-1 hover:underline ${active ? "text-primary-dark" : ""}`}
+      >
+        {label}
+        {active &&
+          (ariaSort === "ascending" ? (
+            <ArrowUp aria-hidden className="size-3.5" />
+          ) : (
+            <ArrowDown aria-hidden className="size-3.5" />
+          ))}
+      </Link>
+    </th>
+  );
+}
+
 function PageLink({
-  page,
+  href,
   disabled,
   label,
   children,
 }: {
-  page: number;
+  href: string;
   disabled: boolean;
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const cls =
-    "border-border-strong inline-flex size-9 items-center justify-center rounded-lg border bg-surface";
+    "border-border-strong bg-surface inline-flex size-9 items-center justify-center rounded-lg border";
   if (disabled) {
     return (
       <span aria-disabled="true" aria-label={label} className={`${cls} opacity-40`}>
@@ -190,7 +291,7 @@ function PageLink({
     );
   }
   return (
-    <Link href={`/clients?page=${page}`} aria-label={label} className={`${cls} hover:bg-canvas`}>
+    <Link href={`/clients${href}`} aria-label={label} className={`${cls} hover:bg-canvas`}>
       {children}
     </Link>
   );

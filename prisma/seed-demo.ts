@@ -12,6 +12,7 @@
  *
  * Uso: npm run db:seed:demo
  */
+import { randomUUID } from "node:crypto";
 import { existsSync } from "node:fs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import {
@@ -247,10 +248,33 @@ const CLIENT_FIELDS = [
   "homeCity",
 ] as const;
 
+/**
+ * Usuarios de demostración (agente y asistente) para ver vínculos y permisos en la interfaz.
+ * NO tienen contraseña: no pueden iniciar sesión. Se crean una sola vez (idempotente).
+ */
+async function ensureDemoUsers() {
+  const roles = Object.fromEntries((await prisma.role.findMany()).map((r) => [r.key, r.id]));
+  if (!roles.AGENT || !roles.ASSISTANT) throw new Error("Primero ejecuta npm run db:seed.");
+  const demo = [
+    { email: "agente.demo@example.com", name: "Agente Demo", roleId: roles.AGENT },
+    { email: "asistente.demo@example.com", name: "Asistente Demo", roleId: roles.ASSISTANT },
+  ];
+  for (const u of demo) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: {},
+      create: { id: randomUUID(), ...u, emailVerified: true },
+    });
+  }
+  console.log("Usuarios de demostración listos: Agente Demo y Asistente Demo (sin acceso).");
+}
+
 async function main() {
+  await ensureDemoUsers();
+
   if ((await prisma.client.count()) > 0) {
     console.log(
-      "Ya existen clientes: el seed de demostración no se ejecuta. (Para reiniciar: npm run db:reset)",
+      "Ya existen clientes: no se crean clientes de demostración. (Para reiniciar: npm run db:reset)",
     );
     return;
   }

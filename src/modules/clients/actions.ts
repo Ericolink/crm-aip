@@ -2,13 +2,15 @@
 
 import { refresh } from "next/cache";
 import { requireUser } from "@/lib/auth/session";
-import { clientFormSchema } from "./schema";
+import { z } from "zod";
+import { CLIENT_STATUSES, clientFormSchema } from "./schema";
 import {
   createClient,
   deleteClient,
   revealBeneficiaryNumber,
   ServiceError,
   updateClient,
+  updateClientStatus,
 } from "./service";
 
 export type ActionError = "forbidden" | "notFound" | "conflict" | "invalid" | "generic";
@@ -80,6 +82,25 @@ export async function revealBeneficiaryNumberAction(
   if (!idSchema(enrollmentId)) return { ok: false, error: "notFound" };
   try {
     return { ok: true, data: await revealBeneficiaryNumber(user, enrollmentId) };
+  } catch (error) {
+    return toActionError(error);
+  }
+}
+
+const statusSchema = z.enum(CLIENT_STATUSES);
+
+/** Cambio rápido de estatus desde la tabla. */
+export async function updateClientStatusAction(
+  clientId: string,
+  status: string,
+): Promise<ActionResult> {
+  const user = await requireUser();
+  const parsed = statusSchema.safeParse(status);
+  if (!idSchema(clientId) || !parsed.success) return { ok: false, error: "invalid" };
+  try {
+    await updateClientStatus(user, clientId, parsed.data);
+    refresh();
+    return { ok: true, data: undefined };
   } catch (error) {
     return toActionError(error);
   }

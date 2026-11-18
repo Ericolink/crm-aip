@@ -5,17 +5,27 @@ import { PERMISSIONS, type PermissionKey } from "@/lib/permissions/catalog";
  * Los servicios las aplican en CADA consulta y modificación.
  */
 
-type UserLike = { id: string; permissions: ReadonlySet<PermissionKey> };
+type UserLike = {
+  id: string;
+  permissions: ReadonlySet<PermissionKey>;
+  /** Agentes vinculados ACTIVOS (solo asistentes). Se carga en cada petición. */
+  linkedAgentIds?: readonly string[];
+};
+
+/** Agentes cuyos clientes puede ver el usuario: él mismo y, si es asistente, sus agentes vinculados. */
+export function visibleAgentIds(user: UserLike): string[] {
+  return [...new Set([user.id, ...(user.linkedAgentIds ?? [])])];
+}
 
 /**
- * Filtro de visibilidad para Prisma: sin "ver todos", solo los clientes asignados al usuario.
+ * Filtro de visibilidad para Prisma.
+ * - Con "ver todos" (client.read_all): todos los clientes.
+ * - Si no: los asignados al usuario y, para asistentes, los de sus agentes vinculados activos.
  * Los eliminados (borrado lógico) nunca se muestran.
  */
 export function clientVisibilityWhere(user: UserLike) {
-  return {
-    deletedAt: null,
-    ...(user.permissions.has(PERMISSIONS.CLIENT_READ_ALL) ? {} : { assignedAgentId: user.id }),
-  };
+  if (user.permissions.has(PERMISSIONS.CLIENT_READ_ALL)) return { deletedAt: null };
+  return { deletedAt: null, assignedAgentId: { in: visibleAgentIds(user) } };
 }
 
 /** Campos básicos: contacto y dirección. Los puede editar quien tenga "update_basic". */

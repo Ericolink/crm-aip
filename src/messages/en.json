@@ -304,6 +304,101 @@
       "confirm": "Delete client",
       "cancel": "Cancel",
       "deleting": "Deleting…"
+    },
+    "filters": {
+      "searchLabel": "Search clients",
+      "searchPlaceholder": "First name, last name, phone or email",
+      "searchPlaceholderIds": "Name, phone, email or member / confirmation number",
+      "identifierNote": "Searching by member, confirmation, Medicare or Medicaid number is exact-match and is written to the audit log.",
+      "statusGroup": "Filter by status",
+      "all": "All",
+      "program": "Program",
+      "carrier": "Carrier",
+      "agent": "Agent",
+      "condition": "Chronic condition",
+      "any": "All",
+      "more": "More filters",
+      "less": "Fewer filters",
+      "createdFrom": "Created from",
+      "createdTo": "Created to",
+      "effectiveFrom": "Effective date from",
+      "effectiveTo": "Effective date to",
+      "sort": "Sort by",
+      "sorts": {
+        "created_desc": "Newest first",
+        "created_asc": "Oldest first",
+        "effective_asc": "Effective date (soonest first)",
+        "effective_desc": "Effective date (latest first)",
+        "name_asc": "Last name (A–Z)"
+      },
+      "sortBy": "Sort by {column}",
+      "active": "Active filters:",
+      "remove": "Remove filter: {label}",
+      "clear": "Clear filters",
+      "searchChip": "Search: “{q}”",
+      "emptyTitle": "No clients match these filters",
+      "emptyBody": "Try another search or remove a filter.",
+      "results": "{count, plural, =0 {No results} one {# result} other {# results}}",
+      "agentColumn": "Agent"
+    },
+    "statusMenu": {
+      "label": "Change status for {name}",
+      "changed": "Status updated: {status}.",
+      "current": "current"
     }
+  },
+  "Settings": {
+    "title": "Settings",
+    "nav": {
+      "label": "Settings sections",
+      "users": "Users & links",
+      "carriers": "Carriers & programs",
+      "conditions": "Chronic conditions",
+      "consents": "Consent types",
+      "soon": "Soon"
+    },
+    "users": {
+      "title": "Users & links",
+      "subtitle": "Link each assistant with the agents they support. The assistant sees and updates (contact and address) only the clients of their linked agents.",
+      "managementSoon": "Creating users, changing roles and deactivating accounts arrives in the administration stage.",
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "status": "Status",
+        "lastLogin": "Last sign-in",
+        "clients": "Assigned clients",
+        "links": "Links"
+      },
+      "active": "Active",
+      "inactive": "Inactive",
+      "never": "Never",
+      "linkedAgents": "Supports:",
+      "linkedAssistants": "Assistants:",
+      "noLinks": "No links",
+      "chooseAgent": "Agent to link",
+      "link": "Link",
+      "remove": "Remove link with {name}",
+      "confirmTitle": "Remove the link?",
+      "confirmBody": "{assistant} will immediately stop seeing the clients of {agent}. The change is written to the audit log.",
+      "confirm": "Remove link",
+      "cancel": "Cancel",
+      "removing": "Removing…",
+      "toast": {
+        "linked": "Link created.",
+        "unlinked": "Link removed."
+      },
+      "errors": {
+        "forbidden": "You do not have permission to manage users.",
+        "notFound": "The link no longer exists.",
+        "invalid": "That combination of users is not valid.",
+        "generic": "The action could not be completed. Please try again.",
+        "conflict": "The link already exists."
+      }
+    }
+  },
+  "GlobalSearch": {
+    "label": "Search client",
+    "placeholder": "Search client: name, phone, email…",
+    "shortcut": "Shortcut: Ctrl K"
   }
 }

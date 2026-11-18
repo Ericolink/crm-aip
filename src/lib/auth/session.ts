@@ -4,9 +4,10 @@ import { getLocale } from "next-intl/server";
 import { cache } from "react";
 import { recordAudit } from "@/lib/audit/audit-log";
 import { prisma } from "@/lib/db";
-import { isPermissionKey, type PermissionKey } from "@/lib/permissions/catalog";
+import type { PermissionKey } from "@/lib/permissions/catalog";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "./auth";
+import { loadCurrentUser, type CurrentUser } from "./current-user";
 import { isBeyondAbsoluteLimit } from "./policy";
 
 /**
@@ -14,43 +15,14 @@ import { isBeyondAbsoluteLimit } from "./policy";
  * TODA pantalla, acción o servicio que necesite al usuario pasa por aquí.
  * Devuelve un objeto reducido: nunca el registro completo de la base.
  */
-export type CurrentUser = {
-  id: string;
-  name: string;
-  email: string;
-  roleKey: string;
-  roleName: { es: string; en: string };
-  permissions: ReadonlySet<PermissionKey>;
-  preferredLocale: string;
-  twoFactorEnabled: boolean;
-};
+export type { CurrentUser };
 
 export type LoginReason = "idle" | "expired" | "inactive" | "signed_out";
 
 /** Una lectura de sesión por petición (React cache). */
 const readSession = cache(async () => auth.api.getSession({ headers: await headers() }));
 
-const loadUser = cache(async (userId: string) =>
-  prisma.user.findUnique({
-    where: { id: userId },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      isActive: true,
-      preferredLocale: true,
-      twoFactorEnabled: true,
-      role: {
-        select: {
-          key: true,
-          nameEs: true,
-          nameEn: true,
-          permissions: { select: { permission: { select: { key: true } } } },
-        },
-      },
-    },
-  }),
-);
+const loadUser = cache(loadCurrentUser);
 
 async function toLogin(reason?: LoginReason): Promise<never> {
   const locale = await getLocale();
@@ -99,23 +71,8 @@ const resolveCurrentUser = cache(async (): Promise<Resolution> => {
     return { status: "login", reason: "expired" };
   }
 
-  const permissions = new Set(
-    user.role.permissions.map((rp) => rp.permission.key).filter(isPermissionKey),
-  );
-
-  return {
-    status: "ok",
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      roleKey: user.role.key,
-      roleName: { es: user.role.nameEs, en: user.role.nameEn },
-      permissions,
-      preferredLocale: user.preferredLocale,
-      twoFactorEnabled: Boolean(user.twoFactorEnabled),
-    },
-  };
+  const { isActive: _isActive, ...current } = user;
+  return { status: "ok", user: current };
 });
 
 /**

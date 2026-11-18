@@ -1,0 +1,48 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
+
+const SECTIONS = [
+  { key: "users", href: "/settings/users", available: true },
+  { key: "carriers", href: "/settings/carriers", available: false },
+  { key: "conditions", href: "/settings/conditions", available: false },
+  { key: "consents", href: "/settings/consents", available: false },
+] as const;
+
+export function SettingsNav() {
+  const t = useTranslations("Settings.nav");
+  const pathname = usePathname();
+  return (
+    <nav aria-label={t("label")} className="flex flex-wrap gap-1.5">
+      {SECTIONS.map((s) => {
+        const base = "inline-flex h-10 items-center gap-2 rounded-lg px-3.5 text-sm font-medium";
+        if (!s.available) {
+          return (
+            <span key={s.key} aria-disabled="true" className={`${base} text-muted opacity-60`}>
+              {t(s.key)}
+              <span className="rounded-full bg-[#eef0f4] px-2 py-0.5 text-[11px] font-semibold text-[#3a4356]">
+                {t("soon")}
+              </span>
+            </span>
+          );
+        }
+        const active = pathname.startsWith(s.href);
+        return (
+          <Link
+            key={s.key}
+            href={s.href}
+            aria-current={active ? "page" : undefined}
+            className={`${base} ${
+              active
+                ? "border-border bg-surface text-primary-dark border font-semibold"
+                : "text-[#333c4e] hover:bg-[#eef0f4]"
+            }`}
+          >
+            {t(s.key)}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
