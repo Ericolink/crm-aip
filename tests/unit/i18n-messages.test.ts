@@ -15,7 +15,8 @@ function flattenKeys(obj: Messages, prefix = ""): string[] {
 
 /** Extrae los nombres de variables ICU ({name}, {date, date, long}) de un texto. */
 function placeholders(text: string): string[] {
-  return [...text.matchAll(/\{\s*(\w+)/g)].map((m) => m[1]).sort();
+  // Solo argumentos reales: {name} o {count, plural, …}; no el texto dentro de un plural.
+  return [...new Set([...text.matchAll(/\{\s*(\w+)\s*[,}]/g)].map((m) => m[1]))].sort();
 }
 
 function valueAt(obj: Messages, path: string): string {

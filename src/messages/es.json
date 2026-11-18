@@ -94,7 +94,7 @@
   },
   "Dashboard": {
     "greeting": "Hola, {name}",
-    "stageNote": "La autenticación y los roles están listos. El panel con indicadores llegará en la Etapa 9."
+    "stageNote": "El panel con indicadores llegará en la Etapa 9. Mientras tanto, ve a Clientes."
   },
   "Account": {
     "title": "Mi cuenta",
@@ -124,5 +124,186 @@
   "NotFound": {
     "title": "Página no encontrada",
     "back": "Volver al inicio"
+  },
+  "Clients": {
+    "title": "Clientes y prospectos",
+    "subtitle": "{count, plural, =0 {Sin registros} one {# registro} other {# registros}}",
+    "newClient": "Nuevo cliente",
+    "empty": {
+      "title": "Todavía no hay clientes",
+      "body": "Registra el primer prospecto para empezar."
+    },
+    "pagination": {
+      "label": "Paginación",
+      "showing": "Mostrando {from}–{to} de {total}",
+      "prev": "Anterior",
+      "next": "Siguiente"
+    },
+    "columns": {
+      "client": "Cliente",
+      "status": "Estatus",
+      "programs": "Programas",
+      "carrier": "Aseguradora actual",
+      "effective": "Fecha efectiva",
+      "created": "Creado",
+      "open": "Abrir perfil de {name}"
+    },
+    "status": {
+      "NEW": "Nuevo",
+      "PENDING": "Pendiente",
+      "ACTIVE": "Activo",
+      "URGENT": "Urgente"
+    },
+    "language": {
+      "ES": "Español",
+      "EN": "Inglés",
+      "OTHER": "Otro idioma"
+    },
+    "relationship": {
+      "SON": "Hijo",
+      "DAUGHTER": "Hija",
+      "HUSBAND": "Esposo",
+      "WIFE": "Esposa",
+      "RELATIVE": "Familiar",
+      "CAREGIVER": "Cuidador(a)",
+      "FRIEND": "Amigo(a)",
+      "OTHER": "Otro"
+    },
+    "programs": {
+      "MEDICARE": "Medicare",
+      "MEDICAID": "Medicaid",
+      "ACA": "ACA / Obamacare"
+    },
+    "form": {
+      "titleNew": "Nuevo cliente",
+      "titleEdit": "Editar cliente",
+      "requiredNote": "Los campos con * son obligatorios.",
+      "sectionsNav": "Secciones del formulario",
+      "sections": {
+        "personal": "Información personal",
+        "contact": "Contacto",
+        "address": "Dirección",
+        "programs": "Programas de cobertura",
+        "conditions": "Condiciones crónicas",
+        "assignment": "Asignación"
+      },
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "dob": "Fecha de nacimiento",
+      "preferredLanguage": "Idioma preferido del cliente",
+      "status": "Estatus",
+      "primaryPhone": "Teléfono principal",
+      "email": "Correo electrónico",
+      "altPhone": "Teléfono alternativo",
+      "altContactName": "Nombre del contacto alternativo",
+      "relationship": "Relación",
+      "relationshipOther": "Describe la relación",
+      "choose": "Selecciona…",
+      "street": "Calle y número",
+      "unit": "Apto / unidad",
+      "city": "Ciudad",
+      "state": "Estado",
+      "zip": "Código postal",
+      "sameMailing": "La dirección postal es igual al domicilio",
+      "mailingTitle": "Dirección postal (mailing address)",
+      "programsHelp": "Selecciona uno o varios. Solo aparecen los campos del programa elegido.",
+      "programHelp": {
+        "MEDICARE": "Número de Medicare y Partes A/B",
+        "MEDICAID": "Número de Medicaid",
+        "ACA": "Mercado de seguros"
+      },
+      "medicareData": "Datos de Medicare",
+      "mbi": "Número de Medicare (MBI)",
+      "partA": "Inicio Parte A",
+      "partB": "Inicio Parte B",
+      "medicaidData": "Datos de Medicaid",
+      "medicaidNumber": "Número de Medicaid",
+      "acaNote": "La aseguradora, el número de miembro y las fechas de la póliza se registran desde el perfil del cliente.",
+      "encrypted": "Se guarda cifrado",
+      "savedNumber": "Guardado: {masked}. Déjalo vacío para no cambiarlo.",
+      "removeProgramWarning": "Al desmarcar un programa se quita del cliente (queda en el historial).",
+      "conditionsHelp": "Marca las del catálogo o agrega otra si no aparece.",
+      "customCondition": "Otra condición",
+      "customConditionPlaceholder": "Escribe y presiona Agregar",
+      "addCustom": "Agregar",
+      "remove": "Quitar {name}",
+      "agent": "Agente responsable",
+      "agentDefault": "Yo",
+      "basicOnly": "Tu rol solo permite editar los datos de contacto y la dirección.",
+      "cancel": "Cancelar",
+      "save": "Guardar cliente",
+      "saving": "Guardando…",
+      "footerNote": "Los cambios quedan registrados en el historial del cliente."
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "El texto es demasiado largo.",
+      "invalidPhone": "El teléfono debe tener 10 dígitos.",
+      "invalidEmail": "Ingresa un correo válido (ej. nombre@dominio.com).",
+      "invalidDate": "Ingresa una fecha válida.",
+      "invalidState": "Usa la abreviatura de 2 letras (ej. FL).",
+      "invalidZip": "Usa 5 dígitos (o 9: 33101-1234).",
+      "invalidIdentifier": "El número no tiene un formato válido.",
+      "invalidOption": "La opción seleccionada no es válida."
+    },
+    "errors": {
+      "forbidden": "No tienes permiso para realizar esta acción.",
+      "notFound": "El cliente no existe o no tienes acceso.",
+      "conflict": "Ya existe un registro igual. Revisa los datos.",
+      "invalid": "Revisa los campos marcados.",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+    },
+    "toast": {
+      "created": "Cliente creado correctamente.",
+      "updated": "Cambios guardados.",
+      "deleted": "Cliente eliminado."
+    },
+    "detail": {
+      "back": "Volver a clientes",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "age": "{age} años",
+      "clientSince": "Cliente desde {date}",
+      "agent": "Agente: {name}",
+      "noAgent": "Sin agente asignado",
+      "updated": "Actualizado: {date}",
+      "personal": "Información personal",
+      "phone": "Teléfono principal",
+      "altContact": "Contacto alternativo",
+      "home": "Domicilio",
+      "mailing": "Dirección postal",
+      "sameAsHome": "Igual al domicilio",
+      "notProvided": "—",
+      "programsTitle": "Programas",
+      "noPrograms": "Sin programas registrados.",
+      "beneficiaryNumber": "Número",
+      "reveal": "Revelar",
+      "hide": "Ocultar",
+      "revealing": "Revelando…",
+      "revealNote": "Revelar queda registrado en la auditoría y se oculta a los 30 s.",
+      "noNumber": "Sin número registrado",
+      "conditions": "Condiciones crónicas",
+      "noConditions": "Sin condiciones registradas.",
+      "coverage": "Cobertura actual",
+      "noCoverage": "Sin cobertura registrada.",
+      "member": "Nº de miembro",
+      "pcp": "Médico primario (PCP)",
+      "noPcp": "Sin PCP registrado.",
+      "insuranceStatus": {
+        "APPLICATION_PENDING": "Solicitud pendiente",
+        "ACTIVE": "Activa",
+        "ENDED": "Finalizada",
+        "CANCELLED": "Cancelada",
+        "DENIED": "Denegada"
+      },
+      "moreSoon": "Médicos, medicamentos, notas e historial completo llegan en las siguientes etapas."
+    },
+    "delete": {
+      "title": "¿Eliminar a {name}?",
+      "body": "El cliente dejará de aparecer en el CRM. Su información y su historial se conservan y un administrador puede consultarlos.",
+      "confirm": "Eliminar cliente",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…"
+    }
   }
 }

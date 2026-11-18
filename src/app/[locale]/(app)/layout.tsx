@@ -1,5 +1,6 @@
 import { getLocale } from "next-intl/server";
 import { Suspense, type ReactNode } from "react";
+import { Toaster } from "sonner";
 import { IdleTimeout } from "@/components/app-shell/idle-timeout";
 import { SidebarNav, type NavItem } from "@/components/app-shell/sidebar-nav";
 import { SignOutButton } from "@/components/app-shell/sign-out-button";
@@ -27,7 +28,7 @@ async function AuthenticatedShell({ children }: { children: ReactNode }) {
   // Solo se muestran las secciones que el rol permite.
   const main: NavItem[] = [
     { key: "dashboard", href: "/dashboard", available: true },
-    { key: "clients", href: "/clients", available: false },
+    { key: "clients", href: "/clients", available: true },
     { key: "reminders", href: "/reminders", available: false },
     ...(hasPermission(user, PERMISSIONS.DATA_IMPORT) || hasPermission(user, PERMISSIONS.DATA_EXPORT)
       ? [{ key: "importExport", href: "/import-export", available: false } as const]
@@ -79,6 +80,7 @@ async function AuthenticatedShell({ children }: { children: ReactNode }) {
         <main className="w-full max-w-[1280px] px-4 py-6 sm:px-8 sm:py-7">{children}</main>
       </div>
       <IdleTimeout />
+      <Toaster position="top-right" richColors closeButton />
     </div>
   );
 }

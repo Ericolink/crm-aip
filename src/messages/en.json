@@ -94,7 +94,7 @@
   },
   "Dashboard": {
     "greeting": "Hello, {name}",
-    "stageNote": "Authentication and roles are ready. The dashboard with metrics arrives in Stage 9."
+    "stageNote": "The dashboard with metrics arrives in Stage 9. Meanwhile, go to Clients."
   },
   "Account": {
     "title": "My account",
@@ -124,5 +124,186 @@
   "NotFound": {
     "title": "Page not found",
     "back": "Back to home"
+  },
+  "Clients": {
+    "title": "Clients & prospects",
+    "subtitle": "{count, plural, =0 {No records} one {# record} other {# records}}",
+    "newClient": "New client",
+    "empty": {
+      "title": "No clients yet",
+      "body": "Add your first prospect to get started."
+    },
+    "pagination": {
+      "label": "Pagination",
+      "showing": "Showing {from}–{to} of {total}",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "columns": {
+      "client": "Client",
+      "status": "Status",
+      "programs": "Programs",
+      "carrier": "Current carrier",
+      "effective": "Effective date",
+      "created": "Created",
+      "open": "Open profile of {name}"
+    },
+    "status": {
+      "NEW": "New",
+      "PENDING": "Pending",
+      "ACTIVE": "Active",
+      "URGENT": "Urgent"
+    },
+    "language": {
+      "ES": "Spanish",
+      "EN": "English",
+      "OTHER": "Other language"
+    },
+    "relationship": {
+      "SON": "Son",
+      "DAUGHTER": "Daughter",
+      "HUSBAND": "Husband",
+      "WIFE": "Wife",
+      "RELATIVE": "Relative",
+      "CAREGIVER": "Caregiver",
+      "FRIEND": "Friend",
+      "OTHER": "Other"
+    },
+    "programs": {
+      "MEDICARE": "Medicare",
+      "MEDICAID": "Medicaid",
+      "ACA": "ACA / Obamacare"
+    },
+    "form": {
+      "titleNew": "New client",
+      "titleEdit": "Edit client",
+      "requiredNote": "Fields marked * are required.",
+      "sectionsNav": "Form sections",
+      "sections": {
+        "personal": "Personal information",
+        "contact": "Contact",
+        "address": "Address",
+        "programs": "Coverage programs",
+        "conditions": "Chronic conditions",
+        "assignment": "Assignment"
+      },
+      "firstName": "First name",
+      "lastName": "Last name",
+      "dob": "Date of birth",
+      "preferredLanguage": "Client preferred language",
+      "status": "Status",
+      "primaryPhone": "Primary phone",
+      "email": "Email",
+      "altPhone": "Alternate phone",
+      "altContactName": "Alternate contact name",
+      "relationship": "Relationship",
+      "relationshipOther": "Describe the relationship",
+      "choose": "Select…",
+      "street": "Street address",
+      "unit": "Apt / unit",
+      "city": "City",
+      "state": "State",
+      "zip": "ZIP code",
+      "sameMailing": "Mailing address is the same as home",
+      "mailingTitle": "Mailing address",
+      "programsHelp": "Select one or more. Only the fields for the chosen program are shown.",
+      "programHelp": {
+        "MEDICARE": "Medicare number and Parts A/B",
+        "MEDICAID": "Medicaid number",
+        "ACA": "Health insurance marketplace"
+      },
+      "medicareData": "Medicare details",
+      "mbi": "Medicare number (MBI)",
+      "partA": "Part A start",
+      "partB": "Part B start",
+      "medicaidData": "Medicaid details",
+      "medicaidNumber": "Medicaid number",
+      "acaNote": "Carrier, member number and policy dates are recorded from the client profile.",
+      "encrypted": "Stored encrypted",
+      "savedNumber": "Saved: {masked}. Leave empty to keep it.",
+      "removeProgramWarning": "Unchecking a program removes it from the client (it stays in the history).",
+      "conditionsHelp": "Check the ones from the catalog or add another if it is not listed.",
+      "customCondition": "Other condition",
+      "customConditionPlaceholder": "Type and press Add",
+      "addCustom": "Add",
+      "remove": "Remove {name}",
+      "agent": "Assigned agent",
+      "agentDefault": "Me",
+      "basicOnly": "Your role can only edit contact details and address.",
+      "cancel": "Cancel",
+      "save": "Save client",
+      "saving": "Saving…",
+      "footerNote": "Changes are recorded in the client history."
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "The text is too long.",
+      "invalidPhone": "Phone number must have 10 digits.",
+      "invalidEmail": "Enter a valid email (e.g. name@domain.com).",
+      "invalidDate": "Enter a valid date.",
+      "invalidState": "Use the 2-letter abbreviation (e.g. FL).",
+      "invalidZip": "Use 5 digits (or 9: 33101-1234).",
+      "invalidIdentifier": "The number does not have a valid format.",
+      "invalidOption": "The selected option is not valid."
+    },
+    "errors": {
+      "forbidden": "You do not have permission to do this.",
+      "notFound": "The client does not exist or you do not have access.",
+      "conflict": "An identical record already exists. Check the data.",
+      "invalid": "Check the highlighted fields.",
+      "generic": "The action could not be completed. Please try again."
+    },
+    "toast": {
+      "created": "Client created successfully.",
+      "updated": "Changes saved.",
+      "deleted": "Client deleted."
+    },
+    "detail": {
+      "back": "Back to clients",
+      "edit": "Edit",
+      "delete": "Delete",
+      "age": "{age} years old",
+      "clientSince": "Client since {date}",
+      "agent": "Agent: {name}",
+      "noAgent": "No assigned agent",
+      "updated": "Updated: {date}",
+      "personal": "Personal information",
+      "phone": "Primary phone",
+      "altContact": "Alternate contact",
+      "home": "Home address",
+      "mailing": "Mailing address",
+      "sameAsHome": "Same as home",
+      "notProvided": "—",
+      "programsTitle": "Programs",
+      "noPrograms": "No programs recorded.",
+      "beneficiaryNumber": "Number",
+      "reveal": "Reveal",
+      "hide": "Hide",
+      "revealing": "Revealing…",
+      "revealNote": "Revealing is written to the audit log and hides again after 30 s.",
+      "noNumber": "No number recorded",
+      "conditions": "Chronic conditions",
+      "noConditions": "No conditions recorded.",
+      "coverage": "Current coverage",
+      "noCoverage": "No coverage recorded.",
+      "member": "Member #",
+      "pcp": "Primary care physician (PCP)",
+      "noPcp": "No PCP recorded.",
+      "insuranceStatus": {
+        "APPLICATION_PENDING": "Application pending",
+        "ACTIVE": "Active",
+        "ENDED": "Ended",
+        "CANCELLED": "Cancelled",
+        "DENIED": "Denied"
+      },
+      "moreSoon": "Doctors, medications, notes and full history arrive in the next stages."
+    },
+    "delete": {
+      "title": "Delete {name}?",
+      "body": "The client will no longer appear in the CRM. Their information and history are kept and an administrator can review them.",
+      "confirm": "Delete client",
+      "cancel": "Cancel",
+      "deleting": "Deleting…"
+    }
   }
 }
