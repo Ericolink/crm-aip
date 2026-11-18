@@ -49,3 +49,6 @@ next-env.d.ts
 *.xlsx
 !tests/fixtures/**/*.csv
 !tests/fixtures/**/*.xlsx
+
+# cliente de Prisma generado (se regenera con `prisma generate`)
+/src/generated/

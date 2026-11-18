@@ -1,7 +1,7 @@
 # CRM de seguros médicos — Arquitectura y planificación
 
 > Documento vivo. Registra las decisiones técnicas aprobadas. Última actualización: 2026-11-18.
-> Estado: Fase 1 aprobada · Fase 2 (diseño) aprobada · **Etapa 0 (fundaciones) completada** · Siguiente: Etapa 1 (autenticación y roles).
+> Estado: Fases 1–2 aprobadas · Etapa 0 completada · **Etapa 1 (autenticación y roles) completada** · Siguiente: Etapa 2 (esquema de clientes + cifrado).
 > Decisiones detalladas en [`docs/adr/`](adr/).
 
 **Aviso:** este sistema se diseña considerando los requisitos de HIPAA (Privacy & Security Rules), pero **no se afirma que sea "HIPAA compliant"** hasta que su infraestructura, proveedores (BAA), contratos, controles y procedimientos sean revisados y validados formalmente.

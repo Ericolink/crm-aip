@@ -4,8 +4,12 @@ import { useLocale, useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
+import { updatePreferredLocale } from "@/modules/users/actions";
 
-/** Selector EN / ES. Cambia el idioma sin salir de la página actual. */
+/**
+ * Selector EN / ES. Cambia el idioma sin salir de la página actual.
+ * Con sesión iniciada, además guarda la preferencia en el perfil del usuario.
+ */
 export function LocaleSwitcher() {
   const t = useTranslations("Common");
   const current = useLocale();
@@ -15,7 +19,10 @@ export function LocaleSwitcher() {
 
   function select(next: AppLocale) {
     if (next === current) return;
-    startTransition(() => router.replace(pathname, { locale: next }));
+    startTransition(async () => {
+      await updatePreferredLocale(next);
+      router.replace(pathname, { locale: next });
+    });
   }
 
   return (

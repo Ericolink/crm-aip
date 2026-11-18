@@ -1,0 +1,183 @@
+// Esquema de la base de datos del CRM.
+// Etapa 1: autenticación (tablas requeridas por Better Auth), roles/permisos y auditoría.
+// Las tablas de clientes, pólizas, médicos, etc. se agregan en la Etapa 2.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Usuarios y autenticación (campos base definidos por Better Auth 1.7)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id               String   @id
+  name             String
+  email            String   @unique
+  emailVerified    Boolean  @default(false)
+  image            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  // Plugin de 2FA
+  twoFactorEnabled Boolean? @default(false)
+
+  // Campos propios del CRM
+  roleId          String
+  role            Role      @relation(fields: [roleId], references: [id])
+  isActive        Boolean   @default(true)
+  preferredLocale String    @default("es")
+  lastLoginAt     DateTime?
+
+  sessions   Session[]
+  accounts   Account[]
+  twoFactors TwoFactor[]
+  auditLogs  AuditLog[]
+
+  @@index([roleId])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  /// Hash scrypt de la contraseña (nunca la contraseña en texto plano).
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verifications")
+}
+
+model TwoFactor {
+  id                      String    @id
+  /// Secreto TOTP (cifrado por Better Auth con el secreto de la aplicación).
+  secret                  String
+  backupCodes             String
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean?  @default(true)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
+  @@index([secret])
+  @@index([userId])
+  @@map("two_factors")
+}
+
+/// Contadores del límite de intentos (rate limiting) de Better Auth.
+model RateLimit {
+  id          String @id
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+
+  @@map("rate_limits")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Roles y permisos (configurables en base de datos)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Role {
+  id          String           @id @default(cuid())
+  /// Código estable usado en el código (ADMIN, AGENT, ASSISTANT…).
+  key         String           @unique
+  nameEn      String
+  nameEs      String
+  /// Los roles de sistema no se pueden eliminar desde la interfaz.
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  users       User[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id    String           @id @default(cuid())
+  /// Clave del permiso, p. ej. "client.read". El catálogo vive en src/lib/permissions/catalog.ts.
+  key   String           @unique
+  roles RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Auditoría de seguridad (solo inserción; nunca guarda PHI ni contraseñas)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  /// Usuario que realizó la acción (null si no hay sesión, p. ej. login fallido).
+  actorId    String?
+  /// Restrict: los usuarios se desactivan, nunca se borran, para no perder trazabilidad.
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  /// Código de la acción: LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT, ACCESS_DENIED…
+  action     String
+  /// SUCCESS | FAILURE | DENIED
+  outcome    String
+  targetType String?
+  targetId   String?
+  ipAddress  String?
+  userAgent  String?
+  /// Datos adicionales NO sensibles (validados por el servicio de auditoría).
+  metadata   Json?
+
+  @@index([actorId, createdAt])
+  @@index([action, createdAt])
+  @@map("audit_logs")
+}

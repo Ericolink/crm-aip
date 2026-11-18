@@ -14,6 +14,8 @@ const serverEnvSchema = z.object({
     .refine((v) => v.startsWith("postgresql://") || v.startsWith("postgres://"), {
       message: "Debe ser una URL de PostgreSQL",
     }),
+  BETTER_AUTH_SECRET: z.string().min(32, { message: "Debe tener al menos 32 caracteres" }),
+  BETTER_AUTH_URL: z.string().url(),
 });
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
