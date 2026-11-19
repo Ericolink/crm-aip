@@ -8,6 +8,8 @@ export default async function SettingsIndex() {
   const user = await requireUser();
   const href = hasPermission(user, PERMISSIONS.USER_MANAGE)
     ? "/settings/users"
-    : "/settings/carriers";
+    : hasPermission(user, PERMISSIONS.SETTINGS_MANAGE)
+      ? "/settings/carriers"
+      : "/settings/audit";
   return redirect({ href, locale: await getLocale() });
 }

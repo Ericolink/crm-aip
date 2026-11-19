@@ -397,7 +397,8 @@
       "users": "Usuarios",
       "carriers": "Aseguradoras y programas",
       "conditions": "Condiciones crónicas",
-      "consents": "Tipos de consentimiento"
+      "consents": "Tipos de consentimiento",
+      "audit": "Auditoría"
     },
     "users": {
       "title": "Usuarios",
@@ -639,6 +640,73 @@
       "invalidName": "Contiene caracteres no permitidos.",
       "invalidNumber": "Escribe un número entero de días (1 o más).",
       "tooLarge": "Máximo 3650 días."
+    },
+    "audit": {
+      "title": "Bitácora de auditoría",
+      "subtitle": "Registro de seguridad de solo lectura: inicios de sesión, accesos denegados, identificadores revelados, exportaciones y cambios de administración. Nunca contiene datos de salud ni identificadores. Consultarla también queda registrado.",
+      "filters": {
+        "label": "Filtros",
+        "from": "Desde",
+        "to": "Hasta",
+        "action": "Acción",
+        "outcome": "Resultado",
+        "actor": "Usuario",
+        "all": "Todos",
+        "apply": "Filtrar",
+        "clear": "Limpiar"
+      },
+      "columns": {
+        "date": "Fecha (ET)",
+        "actor": "Usuario",
+        "action": "Acción",
+        "outcome": "Resultado",
+        "target": "Objeto",
+        "ip": "IP",
+        "details": "Detalles"
+      },
+      "outcomes": {
+        "SUCCESS": "Correcto",
+        "FAILURE": "Fallido",
+        "DENIED": "Denegado"
+      },
+      "noActor": "Sin sesión",
+      "empty": "No hay registros con estos filtros.",
+      "older": "Ver registros anteriores",
+      "newest": "Volver a los más recientes",
+      "actions": {
+        "LOGIN_SUCCESS": "Inicio de sesión",
+        "LOGIN_FAILED": "Inicio de sesión fallido",
+        "LOGIN_2FA_REQUIRED": "Contraseña correcta, falta 2FA",
+        "LOGIN_BLOCKED_INACTIVE": "Acceso bloqueado (cuenta inactiva)",
+        "LOGOUT": "Cierre de sesión",
+        "SESSION_EXPIRED_ABSOLUTE": "Sesión vencida (12 h)",
+        "TWO_FACTOR_SETUP_STARTED": "Inicio de configuración 2FA",
+        "TWO_FACTOR_ENABLED": "2FA activada",
+        "TWO_FACTOR_FAILED": "Código 2FA incorrecto",
+        "PASSWORD_CHANGED": "Contraseña cambiada",
+        "PASSWORD_CHANGE_FAILED": "Cambio de contraseña fallido",
+        "ACCESS_DENIED": "Acceso denegado",
+        "CLIENT_VIEWED": "Perfil de cliente consultado",
+        "SENSITIVE_REVEALED": "Identificador revelado",
+        "ASSISTANT_LINK_CREATED": "Vínculo asistente creado",
+        "ASSISTANT_LINK_REMOVED": "Vínculo asistente quitado",
+        "IDENTIFIER_SEARCH": "Búsqueda por identificador",
+        "CARRIER_CREATED": "Aseguradora creada",
+        "CARRIER_UPDATED": "Aseguradora modificada",
+        "CARRIER_PROGRAM_CHANGED": "Programa de aseguradora cambiado",
+        "PREFERENCE_UPDATED": "Preferencia cambiada",
+        "DATA_IMPORTED": "Importación de clientes",
+        "DATA_EXPORTED": "Exportación de clientes",
+        "USER_CREATED": "Usuario creado",
+        "USER_UPDATED": "Usuario modificado",
+        "USER_DEACTIVATED": "Usuario desactivado",
+        "USER_REACTIVATED": "Usuario reactivado",
+        "USER_PASSWORD_RESET": "Contraseña restablecida por admin",
+        "USER_2FA_RESET": "2FA reiniciada por admin",
+        "CATALOG_ITEM_CREATED": "Elemento de catálogo creado",
+        "CATALOG_ITEM_UPDATED": "Elemento de catálogo modificado",
+        "AUDIT_VIEWED": "Bitácora de auditoría consultada"
+      }
     }
   },
   "GlobalSearch": {

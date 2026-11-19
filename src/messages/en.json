@@ -397,7 +397,8 @@
       "users": "Users",
       "carriers": "Carriers & programs",
       "conditions": "Chronic conditions",
-      "consents": "Consent types"
+      "consents": "Consent types",
+      "audit": "Audit"
     },
     "users": {
       "title": "Users",
@@ -639,6 +640,73 @@
       "invalidName": "It contains characters that are not allowed.",
       "invalidNumber": "Enter a whole number of days (1 or more).",
       "tooLarge": "Maximum 3650 days."
+    },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "Read-only security log: sign-ins, denied access, revealed identifiers, exports and administration changes. It never contains health data or identifiers. Viewing it is also recorded.",
+      "filters": {
+        "label": "Filters",
+        "from": "From",
+        "to": "To",
+        "action": "Action",
+        "outcome": "Outcome",
+        "actor": "User",
+        "all": "All",
+        "apply": "Filter",
+        "clear": "Clear"
+      },
+      "columns": {
+        "date": "Date (ET)",
+        "actor": "User",
+        "action": "Action",
+        "outcome": "Outcome",
+        "target": "Target",
+        "ip": "IP",
+        "details": "Details"
+      },
+      "outcomes": {
+        "SUCCESS": "Success",
+        "FAILURE": "Failed",
+        "DENIED": "Denied"
+      },
+      "noActor": "No session",
+      "empty": "No records match these filters.",
+      "older": "Show older records",
+      "newest": "Back to the most recent",
+      "actions": {
+        "LOGIN_SUCCESS": "Sign-in",
+        "LOGIN_FAILED": "Failed sign-in",
+        "LOGIN_2FA_REQUIRED": "Password OK, 2FA required",
+        "LOGIN_BLOCKED_INACTIVE": "Sign-in blocked (inactive account)",
+        "LOGOUT": "Sign-out",
+        "SESSION_EXPIRED_ABSOLUTE": "Session expired (12 h)",
+        "TWO_FACTOR_SETUP_STARTED": "2FA setup started",
+        "TWO_FACTOR_ENABLED": "2FA enabled",
+        "TWO_FACTOR_FAILED": "Wrong 2FA code",
+        "PASSWORD_CHANGED": "Password changed",
+        "PASSWORD_CHANGE_FAILED": "Password change failed",
+        "ACCESS_DENIED": "Access denied",
+        "CLIENT_VIEWED": "Client profile viewed",
+        "SENSITIVE_REVEALED": "Identifier revealed",
+        "ASSISTANT_LINK_CREATED": "Assistant link created",
+        "ASSISTANT_LINK_REMOVED": "Assistant link removed",
+        "IDENTIFIER_SEARCH": "Identifier search",
+        "CARRIER_CREATED": "Carrier created",
+        "CARRIER_UPDATED": "Carrier updated",
+        "CARRIER_PROGRAM_CHANGED": "Carrier program changed",
+        "PREFERENCE_UPDATED": "Preference updated",
+        "DATA_IMPORTED": "Client import",
+        "DATA_EXPORTED": "Client export",
+        "USER_CREATED": "User created",
+        "USER_UPDATED": "User updated",
+        "USER_DEACTIVATED": "User deactivated",
+        "USER_REACTIVATED": "User reactivated",
+        "USER_PASSWORD_RESET": "Password reset by admin",
+        "USER_2FA_RESET": "2FA reset by admin",
+        "CATALOG_ITEM_CREATED": "Catalog item created",
+        "CATALOG_ITEM_UPDATED": "Catalog item updated",
+        "AUDIT_VIEWED": "Audit log viewed"
+      }
     }
   },
   "GlobalSearch": {

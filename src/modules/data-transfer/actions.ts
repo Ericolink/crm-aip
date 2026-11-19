@@ -17,6 +17,12 @@ const isFormat = (v: unknown): v is FileFormat => v === "CSV" || v === "XLSX";
 
 /** Errores de archivo/exportación con su código específico (p. ej. file.tooLarge → { file: "tooLarge" }). */
 function toResult(error: unknown): ActionResult<never> {
+  // Error inesperado: se registra solo su tipo (nunca el mensaje, que podría traer datos).
+  if (!(error instanceof ServiceError)) {
+    console.error(
+      `[data-transfer] error inesperado: ${error instanceof Error ? error.name : typeof error}`,
+    );
+  }
   if (error instanceof ServiceError && error.code === "INVALID" && error.field) {
     const [scope, code] = error.field.includes(".")
       ? error.field.split(".")

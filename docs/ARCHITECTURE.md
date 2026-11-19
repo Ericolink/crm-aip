@@ -1,7 +1,7 @@
 # CRM de seguros médicos — Arquitectura y planificación
 
 > Documento vivo. Registra las decisiones técnicas aprobadas. Última actualización: 2026-11-18.
-> Estado: Fases 1–2 aprobadas · Etapas 0–11 completadas · **Etapa 12 (administración de usuarios y catálogos) en revisión**.
+> Estado: Fases 1–2 aprobadas · Etapas 0–12 completadas · **Etapa 13 (endurecimiento, E2E y checklist HIPAA) en revisión**.
 > Decisiones detalladas en [`docs/adr/`](adr/).
 
 **Aviso:** este sistema se diseña considerando los requisitos de HIPAA (Privacy & Security Rules), pero **no se afirma que sea "HIPAA compliant"** hasta que su infraestructura, proveedores (BAA), contratos, controles y procedimientos sean revisados y validados formalmente.
@@ -137,5 +137,5 @@ Identidad: Inter; primario `#2346A8`; fondo `#F5F6F8`; estatus Nuevo (azul), Pen
 4. ✅ Búsqueda, filtros combinados, orden y estatus desde la tabla
 5. ✅ Configuración de aseguradoras × programas (alta, edición, activar/desactivar y relaciones con Medicare/Medicaid/ACA) + Perfil con 6 pestañas + aseguranzas con historial
 6. ✅ Médicos (directorio compartido, PCP único, especialistas) · 7. ✅ Medicamentos · 8. ✅ Notas + actividad · 9. ✅ Dashboard · 10. ✅ Recordatorios · 11. ✅ Importar/exportar (ADR 0016)
-7. **En revisión:** Administración de usuarios (crear, roles, desactivar, restablecer contraseña y 2FA), condiciones crónicas y tipos de consentimiento (ADR 0017)
-8. Endurecimiento, pruebas y checklist HIPAA
+7. ✅ Administración de usuarios (crear, roles, desactivar, restablecer contraseña y 2FA), condiciones crónicas y tipos de consentimiento (ADR 0017)
+8. **En revisión:** Endurecimiento (CSP con nonce, visor de auditoría, respaldos cifrados), pruebas E2E con Playwright y checklist HIPAA (ADR 0018, docs/HIPAA-CHECKLIST.md)

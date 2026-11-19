@@ -35,6 +35,7 @@ export const AUDIT_ACTIONS = [
   "USER_2FA_RESET",
   "CATALOG_ITEM_CREATED",
   "CATALOG_ITEM_UPDATED",
+  "AUDIT_VIEWED",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];

@@ -42,7 +42,8 @@ async function AuthenticatedShell({ children }: { children: ReactNode }) {
   ];
   const secondary: NavItem[] = [
     ...(hasPermission(user, PERMISSIONS.SETTINGS_MANAGE) ||
-    hasPermission(user, PERMISSIONS.USER_MANAGE)
+    hasPermission(user, PERMISSIONS.USER_MANAGE) ||
+    hasPermission(user, PERMISSIONS.AUDIT_READ)
       ? [{ key: "settings", href: "/settings", available: true } as const]
       : []),
     { key: "account", href: "/account", available: true },

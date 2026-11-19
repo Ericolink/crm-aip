@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
 
 # next.js
 /.next/
@@ -52,3 +54,6 @@ next-env.d.ts
 
 # cliente de Prisma generado (se regenera con `prisma generate`)
 /src/generated/
+
+# respaldos cifrados de la base (nunca al repositorio)
+/backups/

@@ -3,6 +3,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { CurrentUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { ServiceError } from "@/lib/service-error";
+import { listAuditLog, parseAuditFilters } from "@/modules/audit/service";
 import {
   createCondition,
   createConsentType,
@@ -361,5 +362,31 @@ describe("catálogos", () => {
       defaultValidityDays: null,
     });
     await expectError(updateConsentType(agent, a, { isActive: false }), "FORBIDDEN");
+  });
+});
+
+describe("bitácora de auditoría", () => {
+  it("solo con audit.read; filtra y registra la consulta", async () => {
+    await expectError(listAuditLog(agent, {}), "FORBIDDEN");
+    const filters = parseAuditFilters({ action: "USER_2FA_RESET", outcome: "SUCCESS", from: "x" });
+    expect(filters).toEqual({
+      action: "USER_2FA_RESET",
+      outcome: "SUCCESS",
+      from: undefined,
+      to: undefined,
+      actorId: undefined,
+      before: undefined,
+    });
+    const page = await listAuditLog(admin, filters);
+    expect(page.entries.length).toBeGreaterThan(0);
+    expect(page.entries.every((e) => e.action === "USER_2FA_RESET")).toBe(true);
+    expect(
+      await prisma.auditLog.count({ where: { action: "AUDIT_VIEWED", actorId: admin.id } }),
+    ).toBeGreaterThan(0);
+    // Valores desconocidos en la URL se ignoran.
+    expect(parseAuditFilters({ action: "DROP TABLE", actor: "../x" })).toMatchObject({
+      action: undefined,
+      actorId: undefined,
+    });
   });
 });
