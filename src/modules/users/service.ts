@@ -6,14 +6,14 @@ import { PERMISSIONS, ROLE_KEYS } from "@/lib/permissions/catalog";
 import { ServiceError } from "@/lib/service-error";
 
 /**
- * Administración de usuarios (Etapa 3b: consulta y vínculos asistente ↔ agente).
- * Crear/desactivar usuarios y cambiar roles llega en la etapa de administración.
+ * Administración de usuarios: consulta y vínculos asistente ↔ agente.
+ * Alta, edición, desactivación y restablecimientos viven en management.ts.
  */
 
 /** Roles cuyos clientes puede apoyar un asistente. */
-const SUPPORTABLE_ROLES = [ROLE_KEYS.AGENT, ROLE_KEYS.ADMIN];
+export const SUPPORTABLE_ROLES = [ROLE_KEYS.AGENT, ROLE_KEYS.ADMIN];
 
-async function requireUserManager(user: CurrentUser) {
+export async function requireUserManager(user: CurrentUser) {
   if (user.permissions.has(PERMISSIONS.USER_MANAGE)) return;
   await recordAudit({
     action: "ACCESS_DENIED",
@@ -34,6 +34,9 @@ export async function listUsersWithLinks(user: CurrentUser) {
       email: true,
       isActive: true,
       lastLoginAt: true,
+      preferredLocale: true,
+      mustChangePassword: true,
+      twoFactorEnabled: true,
       role: { select: { key: true, nameEs: true, nameEn: true } },
       assistantLinks: {
         where: { isActive: true },
@@ -45,7 +48,12 @@ export async function listUsersWithLinks(user: CurrentUser) {
         orderBy: { assistant: { name: "asc" } },
         select: { assistant: { select: { id: true, name: true, isActive: true } } },
       },
-      _count: { select: { clientsAssigned: { where: { deletedAt: null } } } },
+      _count: {
+        select: {
+          clientsAssigned: { where: { deletedAt: null } },
+          remindersAssigned: { where: { status: "PENDING" } },
+        },
+      },
     },
   });
 
@@ -55,10 +63,14 @@ export async function listUsersWithLinks(user: CurrentUser) {
     email: u.email,
     isActive: u.isActive,
     lastLoginAt: u.lastLoginAt,
+    preferredLocale: u.preferredLocale === "en" ? ("en" as const) : ("es" as const),
+    mustChangePassword: u.mustChangePassword,
+    twoFactorEnabled: Boolean(u.twoFactorEnabled),
     role: { key: u.role.key, name: { es: u.role.nameEs, en: u.role.nameEn } },
     linkedAgents: u.assistantLinks.map((l) => l.agent),
     linkedAssistants: u.agentLinks.map((l) => l.assistant),
     assignedClients: u._count.clientsAssigned,
+    pendingReminders: u._count.remindersAssigned,
   }));
 }
 

@@ -11,6 +11,7 @@ export type AuthErrorKey =
   | "sessionStep"
   | "cannotSignIn"
   | "wrongPassword"
+  | "passwordReused"
   | "generic";
 
 type MaybeAuthError = { status?: number; code?: string } | null | undefined;
@@ -23,6 +24,8 @@ export function authErrorKey(error: MaybeAuthError): AuthErrorKey {
       return "invalidCredentials";
     case "INVALID_PASSWORD":
       return "wrongPassword";
+    case "PASSWORD_REUSED":
+      return "passwordReused";
     case "INVALID_CODE":
     case "INVALID_TWO_FACTOR_CODE":
       return "invalidCode";

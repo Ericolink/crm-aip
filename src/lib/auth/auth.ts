@@ -1,7 +1,7 @@
 import "server-only";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { createAuthMiddleware, isAPIError } from "better-auth/api";
+import { APIError, createAuthMiddleware, isAPIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { twoFactor } from "better-auth/plugins";
 import { recordAudit } from "@/lib/audit/audit-log";
@@ -128,6 +128,14 @@ export const auth = betterAuth({
 
   hooks: {
     before: createAuthMiddleware(async (ctx) => {
+      // La nueva contraseña debe ser distinta (importa sobre todo tras una contraseña temporal).
+      if (
+        ctx.path === "/change-password" &&
+        typeof ctx.body?.newPassword === "string" &&
+        ctx.body.newPassword === ctx.body?.currentPassword
+      ) {
+        throw new APIError("BAD_REQUEST", { code: "PASSWORD_REUSED", message: "PASSWORD_REUSED" });
+      }
       if (ctx.path === "/sign-out") {
         // Se registra antes porque después la sesión ya no existe.
         const session = await auth.api.getSession({ headers: ctx.headers ?? new Headers() });
@@ -181,10 +189,15 @@ export const auth = betterAuth({
       }
 
       if (ctx.path === "/change-password") {
+        const actorId = ctx.context.session?.user.id ?? null;
+        // Con su propia contraseña, el usuario ya no depende de la que puso el administrador.
+        if (!failed && actorId) {
+          await prisma.user.update({ where: { id: actorId }, data: { mustChangePassword: false } });
+        }
         await recordAudit({
           action: failed ? "PASSWORD_CHANGE_FAILED" : "PASSWORD_CHANGED",
           outcome: failed ? "FAILURE" : "SUCCESS",
-          actorId: ctx.context.session?.user.id ?? null,
+          actorId,
           headers: ctx.headers,
         });
         return;

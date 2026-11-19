@@ -37,7 +37,8 @@
     "sessionStep": "Verification expired. Enter your email and password again.",
     "cannotSignIn": "This account cannot sign in. Contact the administrator.",
     "wrongPassword": "The password is not correct.",
-    "generic": "Something went wrong. Please try again."
+    "generic": "Something went wrong. Please try again.",
+    "passwordReused": "The new password must be different from the current one."
   },
   "Login": {
     "hero": "Your clients, policies and follow-ups in one place.",
@@ -157,7 +158,10 @@
     "passwordMismatch": "The passwords do not match.",
     "savePassword": "Save password",
     "savingPassword": "Saving…",
-    "passwordChanged": "Password updated. You were signed out on your other devices."
+    "passwordChanged": "Password updated. You were signed out on your other devices.",
+    "temporaryPassword": "Temporary password",
+    "forcedTitle": "Create your password",
+    "forcedBody": "Hi, {name}. You signed in with a password set by the administrator. To continue, choose your own password that only you know."
   },
   "NotFound": {
     "title": "Page not found",
@@ -261,6 +265,7 @@
       "savedNumber": "Saved: {masked}. Leave empty to keep it.",
       "removeProgramWarning": "Unchecking a program removes it from the client (it stays in the history).",
       "conditionsHelp": "Check the ones from the catalog or add another if it is not listed.",
+      "conditionInactive": "inactive in the catalog",
       "customCondition": "Other condition",
       "customConditionPlaceholder": "Type and press Add",
       "addCustom": "Add",
@@ -389,23 +394,22 @@
     "title": "Settings",
     "nav": {
       "label": "Settings sections",
-      "users": "Users & links",
+      "users": "Users",
       "carriers": "Carriers & programs",
       "conditions": "Chronic conditions",
-      "consents": "Consent types",
-      "soon": "Soon"
+      "consents": "Consent types"
     },
     "users": {
-      "title": "Users & links",
-      "subtitle": "Link each assistant with the agents they support. The assistant sees and updates (contact and address) only the clients of their linked agents.",
-      "managementSoon": "Creating users, changing roles and deactivating accounts arrives in the administration stage.",
+      "title": "Users",
+      "subtitle": "Create accounts, assign roles, deactivate access and link each assistant to the agents they support. Users are never deleted: they are deactivated.",
       "columns": {
         "user": "User",
         "role": "Role",
         "status": "Status",
         "lastLogin": "Last sign-in",
         "clients": "Assigned clients",
-        "links": "Links"
+        "links": "Links",
+        "actions": "Actions"
       },
       "active": "Active",
       "inactive": "Inactive",
@@ -422,8 +426,13 @@
       "cancel": "Cancel",
       "removing": "Removing…",
       "toast": {
-        "linked": "Link created.",
-        "unlinked": "Link removed."
+        "created": "User created. Hand over their initial password.",
+        "saved": "Changes saved.",
+        "passwordReset": "Password reset. Their sessions were closed.",
+        "twoFactorReset": "2-step verification reset.",
+        "deactivated": "Account deactivated.",
+        "deactivatedMoved": "Account deactivated. {clients} clients and {reminders} reminders were reassigned.",
+        "reactivated": "Account reactivated."
       },
       "errors": {
         "forbidden": "You do not have permission to manage users.",
@@ -431,6 +440,75 @@
         "invalid": "That combination of users is not valid.",
         "generic": "The action could not be completed. Please try again.",
         "conflict": "The link already exists."
+      },
+      "newUser": "New user",
+      "manage": "Manage",
+      "manageTitle": "Manage {name}",
+      "you": "You",
+      "mustChangePassword": "Must change password",
+      "twoFactorPending": "2FA pending",
+      "form": {
+        "createTitle": "New user",
+        "createDescription": "Hand over the initial password in person. On first sign-in the user must change it and set up 2-step verification.",
+        "name": "Full name",
+        "email": "Email (sign-in username)",
+        "role": "Role",
+        "locale": "Language",
+        "password": "Initial password",
+        "passwordConfirm": "Confirm the password",
+        "passwordHint": "At least {min} characters.",
+        "create": "Create user",
+        "creating": "Creating…",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "cancel": "Cancel",
+        "back": "Back",
+        "roleSelfHint": "You cannot change your own role.",
+        "roleHelp": {
+          "ADMIN": "Full access: users, settings, export and import.",
+          "AGENT": "Their own clients: details, coverage, doctors, medications, notes and reminders.",
+          "ASSISTANT": "Clients of their linked agents: contact, notes and reminders. No medical information or full identifiers."
+        },
+        "toAssistantWarning": "An assistant has no clients of their own. {count, plural, one {Their client} other {Their # clients}} will move to the agent you choose. Their links as an agent are deactivated.",
+        "fromAssistantWarning": "When they stop being an assistant, their links to agents are deactivated.",
+        "reassignTo": "Move their clients to",
+        "choose": "Select…"
+      },
+      "security": {
+        "title": "Account and security",
+        "resetPassword": "Reset password",
+        "resetPasswordBody": "Type a temporary password and hand it over in person. All their sessions will be closed and they must change it on sign-in.",
+        "resetPasswordConfirm": "Reset password",
+        "resetTwoFactor": "Reset 2-step verification",
+        "resetTwoFactorBody": "For a lost phone. Their setup and backup codes are deleted, their sessions are closed and they must set it up again on sign-in.",
+        "resetTwoFactorConfirm": "Reset 2FA",
+        "deactivate": "Deactivate account",
+        "deactivateBody": "They will not be able to sign in and their sessions are closed immediately. Their history is kept.",
+        "deactivateWork": "They have {clients} clients and {reminders} pending reminders. Choose which agent receives them; each change is recorded in the client's history.",
+        "reassignTo": "Move to",
+        "deactivateConfirm": "Deactivate",
+        "reactivate": "Reactivate account",
+        "reactivateBody": "They will be able to sign in again with their current password. Reassigned clients do not return automatically.",
+        "reactivateConfirm": "Reactivate",
+        "selfNote": "Change your own password in My account. You cannot deactivate yourself or reset your own 2FA.",
+        "working": "Working…"
+      },
+      "fieldErrors": {
+        "required": "This field is required.",
+        "tooLong": "It is too long.",
+        "invalidName": "Use only letters, spaces, apostrophes or hyphens.",
+        "invalidEmail": "The email is not valid.",
+        "duplicate": "A user with that email already exists.",
+        "tooShort": "At least {min} characters.",
+        "mismatch": "The passwords do not match.",
+        "invalidOption": "Choose a valid option.",
+        "self": "You cannot change your own role.",
+        "lastAdmin": "At least one active administrator must remain."
+      },
+      "actionErrors": {
+        "self": "You cannot do this to your own account.",
+        "lastAdmin": "At least one active administrator must remain.",
+        "reassign": "Choose an active agent to receive their clients and reminders."
       }
     },
     "carriers": {
@@ -474,6 +552,93 @@
         "invalid": "The name is not valid (2 to 80 characters).",
         "generic": "The action could not be completed. Please try again."
       }
+    },
+    "conditions": {
+      "title": "Chronic conditions",
+      "subtitle": "List shown in the client form and in the filters. Deactivating a condition does not remove it from clients who already have it: it is just no longer offered.",
+      "add": "Add condition",
+      "addTitle": "New condition",
+      "editTitle": "Edit condition",
+      "nameEs": "Name in Spanish",
+      "nameEn": "Name in English",
+      "columns": {
+        "order": "Order",
+        "condition": "Condition",
+        "status": "Status",
+        "clients": "Clients",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "edit": "Edit",
+      "moveUp": "Move {name} up",
+      "moveDown": "Move {name} down",
+      "save": "Save",
+      "cancel": "Cancel",
+      "toast": {
+        "created": "Condition added.",
+        "updated": "Changes saved."
+      },
+      "errors": {
+        "forbidden": "You do not have permission to configure catalogs.",
+        "notFound": "The condition no longer exists.",
+        "conflict": "A condition with that name already exists.",
+        "invalid": "Check the information.",
+        "generic": "The action could not be completed. Try again."
+      }
+    },
+    "consents": {
+      "title": "Consent types",
+      "subtitle": "Types that can be recorded for each client (SOA and contact permissions). You define the validity and whether a document is required: the system does not assume CMS rules.",
+      "note": "Recording consents in the client profile comes in a later stage; this prepares the catalog.",
+      "add": "Add type",
+      "addTitle": "New consent type",
+      "editTitle": "Edit consent type",
+      "nameEs": "Name in Spanish",
+      "nameEn": "Name in English",
+      "requiresDocument": "Requires a signed document",
+      "validity": "Default validity (days)",
+      "validityHint": "Leave empty if it does not expire. Maximum 3650.",
+      "noExpiry": "Does not expire",
+      "days": "{count, plural, one {# day} other {# days}}",
+      "yes": "Yes",
+      "no": "No",
+      "columns": {
+        "type": "Type",
+        "code": "Code",
+        "document": "Document",
+        "validity": "Validity",
+        "status": "Status",
+        "records": "Records",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "toast": {
+        "created": "Type added.",
+        "updated": "Changes saved."
+      },
+      "errors": {
+        "forbidden": "You do not have permission to configure catalogs.",
+        "notFound": "The type no longer exists.",
+        "conflict": "A type with that code already exists.",
+        "invalid": "Check the information.",
+        "generic": "The action could not be completed. Try again."
+      }
+    },
+    "fieldErrors": {
+      "required": "This field is required.",
+      "tooLong": "It is too long.",
+      "invalidName": "It contains characters that are not allowed.",
+      "invalidNumber": "Enter a whole number of days (1 or more).",
+      "tooLarge": "Maximum 3650 days."
     }
   },
   "GlobalSearch": {

@@ -13,7 +13,7 @@ import { carrierNameSchema } from "./schema";
  * una cobertura. Desactivar no borra coberturas existentes: solo deja de ofrecerse.
  */
 
-async function requireSettingsManager(user: CurrentUser) {
+export async function requireSettingsManager(user: CurrentUser) {
   if (user.permissions.has(PERMISSIONS.SETTINGS_MANAGE)) return;
   await recordAudit({
     action: "ACCESS_DENIED",

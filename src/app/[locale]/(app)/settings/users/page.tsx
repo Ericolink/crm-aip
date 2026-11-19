@@ -3,6 +3,8 @@ import { Forbidden } from "@/components/forbidden";
 import { hasPermission, requireUser } from "@/lib/auth/session";
 import { PERMISSIONS, ROLE_KEYS } from "@/lib/permissions/catalog";
 import { AssistantLinksEditor } from "@/modules/users/components/assistant-links-editor";
+import { ManageUserButton, NewUserButton } from "@/modules/users/components/user-dialogs";
+import { listAssignableRoles } from "@/modules/users/management";
 import { listUsersWithLinks } from "@/modules/users/service";
 
 export default async function UsersSettingsPage() {
@@ -11,7 +13,7 @@ export default async function UsersSettingsPage() {
 
   const t = await getTranslations("Settings.users");
   const locale = (await getLocale()) as "es" | "en";
-  const users = await listUsersWithLinks(user);
+  const [users, roles] = await Promise.all([listUsersWithLinks(user), listAssignableRoles(user)]);
   const availableAgents = users
     .filter((u) => u.isActive && (u.role.key === ROLE_KEYS.AGENT || u.role.key === ROLE_KEYS.ADMIN))
     .map((u) => ({ id: u.id, name: u.name }));
@@ -26,16 +28,21 @@ export default async function UsersSettingsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="max-w-3xl">
-        <h2 className="text-lg font-semibold">{t("title")}</h2>
-        <p className="text-muted mt-1 text-sm">{t("subtitle")}</p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="max-w-3xl">
+          <h2 className="text-lg font-semibold">{t("title")}</h2>
+          <p className="text-muted mt-1 text-sm">{t("subtitle")}</p>
+        </div>
+        <NewUserButton roles={roles} />
       </div>
       <section className="border-border bg-surface rounded-xl border">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] border-collapse text-[13px]">
+          <table className="w-full min-w-[1000px] border-collapse text-[13px]">
             <thead>
               <tr className="text-left text-xs font-semibold text-[#4a5366]">
-                {(["user", "role", "status", "lastLogin", "clients", "links"] as const).map((c) => (
+                {(
+                  ["user", "role", "status", "lastLogin", "clients", "links", "actions"] as const
+                ).map((c) => (
                   <th
                     key={c}
                     scope="col"
@@ -53,7 +60,12 @@ export default async function UsersSettingsPage() {
                   className={`border-b border-[#f1f3f6] align-top ${u.isActive ? "" : "opacity-60"}`}
                 >
                   <td className="px-4 py-3">
-                    <div className="font-semibold">{u.name}</div>
+                    <div className="font-semibold">
+                      {u.name}
+                      {u.id === user.id && (
+                        <span className="text-muted ml-1.5 text-xs font-normal">({t("you")})</span>
+                      )}
+                    </div>
                     <div className="text-muted text-xs break-all">{u.email}</div>
                   </td>
                   <td className="px-4 py-3">{u.role.name[locale]}</td>
@@ -67,6 +79,16 @@ export default async function UsersSettingsPage() {
                     >
                       {u.isActive ? t("active") : t("inactive")}
                     </span>
+                    {u.isActive && u.mustChangePassword && (
+                      <div className="text-status-pending-fg mt-1 text-xs">
+                        {t("mustChangePassword")}
+                      </div>
+                    )}
+                    {u.isActive && !u.twoFactorEnabled && (
+                      <div className="text-status-pending-fg mt-1 text-xs">
+                        {t("twoFactorPending")}
+                      </div>
+                    )}
                   </td>
                   <td className="text-muted px-4 py-3">{dateTime(u.lastLoginAt)}</td>
                   <td className="px-4 py-3">{u.assignedClients}</td>
@@ -93,13 +115,29 @@ export default async function UsersSettingsPage() {
                       <span className="text-muted text-xs">—</span>
                     )}
                   </td>
+                  <td className="px-4 py-3 text-right">
+                    <ManageUserButton
+                      user={{
+                        id: u.id,
+                        name: u.name,
+                        email: u.email,
+                        roleKey: u.role.key,
+                        preferredLocale: u.preferredLocale,
+                        isActive: u.isActive,
+                        assignedClients: u.assignedClients,
+                        pendingReminders: u.pendingReminders,
+                        isSelf: u.id === user.id,
+                      }}
+                      roles={roles}
+                      agents={availableAgents.filter((a) => a.id !== u.id)}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </section>
-      <p className="text-muted text-xs">{t("managementSoon")}</p>
     </div>
   );
 }

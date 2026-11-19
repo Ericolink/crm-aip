@@ -29,7 +29,7 @@ type Props = {
   defaultValues: ClientFormInput;
   scope: ClientEditScope;
   savedNumbersLast4?: { MEDICARE: string | null; MEDICAID: string | null };
-  conditions: { id: string; nameEs: string; nameEn: string }[];
+  conditions: { id: string; nameEs: string; nameEn: string; isActive?: boolean }[];
   agents: { id: string; name: string }[];
   canAssign: boolean;
 };
@@ -444,6 +444,9 @@ export function ClientForm(props: Props) {
                       {...register("conditionIds")}
                     />
                     {locale === "en" ? c.nameEn : c.nameEs}
+                    {c.isActive === false && (
+                      <span className="text-muted text-xs">({t("form.conditionInactive")})</span>
+                    )}
                   </label>
                 ))}
               </div>

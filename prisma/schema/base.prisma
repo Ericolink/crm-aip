@@ -30,11 +30,13 @@ model User {
   twoFactorEnabled Boolean? @default(false)
 
   // Campos propios del CRM
-  roleId          String
-  role            Role      @relation(fields: [roleId], references: [id])
-  isActive        Boolean   @default(true)
-  preferredLocale String    @default("es")
-  lastLoginAt     DateTime?
+  roleId             String
+  role               Role      @relation(fields: [roleId], references: [id])
+  isActive           Boolean   @default(true)
+  preferredLocale    String    @default("es")
+  lastLoginAt        DateTime?
+  /// La contraseña la puso un administrador (alta o restablecimiento): debe cambiarse al entrar.
+  mustChangePassword Boolean   @default(false)
 
   sessions   Session[]
   accounts   Account[]

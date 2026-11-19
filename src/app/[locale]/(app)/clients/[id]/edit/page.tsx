@@ -10,11 +10,9 @@ export default async function EditClientPage({ params }: { params: Promise<{ id:
   if (clientEditScope(user) === "none") return <Forbidden />;
 
   const { id } = await params;
-  const [data, options] = await Promise.all([
-    getClientForEdit(user, id),
-    getClientFormOptions(user),
-  ]);
+  const data = await getClientForEdit(user, id);
   if (!data) notFound();
+  const options = await getClientFormOptions(user, data.values.conditionIds);
 
   return (
     <ClientForm

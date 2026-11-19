@@ -20,6 +20,8 @@ export type CurrentUser = {
   linkedAgentIds: readonly string[];
   preferredLocale: string;
   twoFactorEnabled: boolean;
+  /** Contraseña puesta por un administrador: hay que cambiarla antes de usar el sistema. */
+  mustChangePassword: boolean;
 };
 
 export async function loadCurrentUser(
@@ -34,6 +36,7 @@ export async function loadCurrentUser(
       isActive: true,
       preferredLocale: true,
       twoFactorEnabled: true,
+      mustChangePassword: true,
       role: {
         select: {
           key: true,
@@ -63,5 +66,6 @@ export async function loadCurrentUser(
     linkedAgentIds: user.assistantLinks.map((l) => l.agentId),
     preferredLocale: user.preferredLocale,
     twoFactorEnabled: Boolean(user.twoFactorEnabled),
+    mustChangePassword: user.mustChangePassword,
   };
 }

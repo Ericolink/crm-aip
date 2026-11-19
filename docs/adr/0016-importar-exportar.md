@@ -1,6 +1,6 @@
 # ADR 0016 — Importar y exportar clientes
 
-- **Estado:** propuesta para revisión (2026-11-19)
+- **Estado:** aprobada (2026-11-19)
 
 ## Decisiones del usuario
 

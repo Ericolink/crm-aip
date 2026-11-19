@@ -38,6 +38,8 @@ async function endSession(token: string): Promise<boolean> {
 type RequireUserOptions = {
   /** Solo la pantalla de configuración de 2FA permite entrar sin 2FA activa. */
   allowWithoutTwoFactor?: boolean;
+  /** Solo la pantalla de cambio obligatorio permite entrar con contraseña temporal. */
+  allowPendingPasswordChange?: boolean;
 };
 
 type Resolution = { status: "ok"; user: CurrentUser } | { status: "login"; reason?: LoginReason };
@@ -77,12 +79,16 @@ const resolveCurrentUser = cache(async (): Promise<Resolution> => {
 
 /**
  * Devuelve el usuario actual o redirige al login.
- * Verifica: sesión válida, usuario activo, límite absoluto de 12 h y 2FA configurada.
+ * Verifica: sesión válida, usuario activo, límite absoluto de 12 h, contraseña propia
+ * (no la que puso un administrador) y 2FA configurada. Primero la contraseña, luego la 2FA.
  */
 export async function requireUser(options: RequireUserOptions = {}): Promise<CurrentUser> {
   const result = await resolveCurrentUser();
   if (result.status === "login") return toLogin(result.reason);
 
+  if (result.user.mustChangePassword && !options.allowPendingPasswordChange) {
+    return redirect({ href: "/change-password", locale: await getLocale() });
+  }
   if (!result.user.twoFactorEnabled && !options.allowWithoutTwoFactor) {
     return redirect({ href: "/setup-2fa", locale: await getLocale() });
   }

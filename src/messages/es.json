@@ -37,7 +37,8 @@
     "sessionStep": "La verificación caducó. Vuelve a ingresar tu correo y contraseña.",
     "cannotSignIn": "No se pudo iniciar sesión con esta cuenta. Contacta al administrador.",
     "wrongPassword": "La contraseña no es correcta.",
-    "generic": "Ocurrió un error. Inténtalo de nuevo."
+    "generic": "Ocurrió un error. Inténtalo de nuevo.",
+    "passwordReused": "La nueva contraseña debe ser distinta de la actual."
   },
   "Login": {
     "hero": "Tus clientes, pólizas y seguimientos en un solo lugar.",
@@ -157,7 +158,10 @@
     "passwordMismatch": "Las contraseñas no coinciden.",
     "savePassword": "Guardar contraseña",
     "savingPassword": "Guardando…",
-    "passwordChanged": "Contraseña actualizada. Se cerró la sesión en tus otros dispositivos."
+    "passwordChanged": "Contraseña actualizada. Se cerró la sesión en tus otros dispositivos.",
+    "temporaryPassword": "Contraseña temporal",
+    "forcedTitle": "Crea tu contraseña",
+    "forcedBody": "Hola, {name}. Entraste con una contraseña que puso el administrador. Para continuar, elige una contraseña propia que solo tú conozcas."
   },
   "NotFound": {
     "title": "Página no encontrada",
@@ -261,6 +265,7 @@
       "savedNumber": "Guardado: {masked}. Déjalo vacío para no cambiarlo.",
       "removeProgramWarning": "Al desmarcar un programa se quita del cliente (queda en el historial).",
       "conditionsHelp": "Marca las del catálogo o agrega otra si no aparece.",
+      "conditionInactive": "inactiva en el catálogo",
       "customCondition": "Otra condición",
       "customConditionPlaceholder": "Escribe y presiona Agregar",
       "addCustom": "Agregar",
@@ -389,23 +394,22 @@
     "title": "Configuración",
     "nav": {
       "label": "Secciones de configuración",
-      "users": "Usuarios y vínculos",
+      "users": "Usuarios",
       "carriers": "Aseguradoras y programas",
       "conditions": "Condiciones crónicas",
-      "consents": "Tipos de consentimiento",
-      "soon": "Pronto"
+      "consents": "Tipos de consentimiento"
     },
     "users": {
-      "title": "Usuarios y vínculos",
-      "subtitle": "Vincula a cada asistente con los agentes a los que apoya. El asistente ve y actualiza (contacto y dirección) solo los clientes de sus agentes vinculados.",
-      "managementSoon": "Crear usuarios, cambiar roles y desactivar cuentas llega en la etapa de administración.",
+      "title": "Usuarios",
+      "subtitle": "Crea cuentas, asigna roles, desactiva accesos y vincula a cada asistente con los agentes a los que apoya. Los usuarios nunca se borran: se desactivan.",
       "columns": {
         "user": "Usuario",
         "role": "Rol",
         "status": "Estado",
         "lastLogin": "Último acceso",
         "clients": "Clientes asignados",
-        "links": "Vínculos"
+        "links": "Vínculos",
+        "actions": "Acciones"
       },
       "active": "Activo",
       "inactive": "Inactivo",
@@ -422,8 +426,13 @@
       "cancel": "Cancelar",
       "removing": "Quitando…",
       "toast": {
-        "linked": "Vínculo creado.",
-        "unlinked": "Vínculo eliminado."
+        "created": "Usuario creado. Entrégale su contraseña inicial.",
+        "saved": "Cambios guardados.",
+        "passwordReset": "Contraseña restablecida. Se cerraron sus sesiones.",
+        "twoFactorReset": "Verificación en 2 pasos reiniciada.",
+        "deactivated": "Cuenta desactivada.",
+        "deactivatedMoved": "Cuenta desactivada. Se reasignaron {clients} clientes y {reminders} recordatorios.",
+        "reactivated": "Cuenta reactivada."
       },
       "errors": {
         "forbidden": "No tienes permiso para administrar usuarios.",
@@ -431,6 +440,75 @@
         "invalid": "La combinación de usuarios no es válida.",
         "generic": "No se pudo completar la acción. Inténtalo de nuevo.",
         "conflict": "El vínculo ya existe."
+      },
+      "newUser": "Nuevo usuario",
+      "manage": "Gestionar",
+      "manageTitle": "Gestionar a {name}",
+      "you": "Tú",
+      "mustChangePassword": "Debe cambiar la contraseña",
+      "twoFactorPending": "2FA pendiente",
+      "form": {
+        "createTitle": "Nuevo usuario",
+        "createDescription": "Entrega la contraseña inicial en persona. Al entrar, el usuario deberá cambiarla y configurar la verificación en 2 pasos.",
+        "name": "Nombre completo",
+        "email": "Correo (usuario de acceso)",
+        "role": "Rol",
+        "locale": "Idioma",
+        "password": "Contraseña inicial",
+        "passwordConfirm": "Confirma la contraseña",
+        "passwordHint": "Mínimo {min} caracteres.",
+        "create": "Crear usuario",
+        "creating": "Creando…",
+        "save": "Guardar cambios",
+        "saving": "Guardando…",
+        "cancel": "Cancelar",
+        "back": "Volver",
+        "roleSelfHint": "No puedes cambiar tu propio rol.",
+        "roleHelp": {
+          "ADMIN": "Acceso completo: usuarios, configuración, exportar e importar.",
+          "AGENT": "Sus propios clientes: datos, coberturas, médicos, medicamentos, notas y recordatorios.",
+          "ASSISTANT": "Clientes de sus agentes vinculados: contacto, notas y recordatorios. Sin información médica ni identificadores completos."
+        },
+        "toAssistantWarning": "Un asistente no tiene clientes propios. {count, plural, one {Su cliente pasará} other {Sus # clientes pasarán}} al agente que elijas. Sus vínculos como agente se desactivan.",
+        "fromAssistantWarning": "Al dejar de ser asistente se desactivan sus vínculos con agentes.",
+        "reassignTo": "Pasar sus clientes a",
+        "choose": "Selecciona…"
+      },
+      "security": {
+        "title": "Cuenta y seguridad",
+        "resetPassword": "Restablecer contraseña",
+        "resetPasswordBody": "Escribe una contraseña temporal y entrégala en persona. Se cerrarán todas sus sesiones y deberá cambiarla al entrar.",
+        "resetPasswordConfirm": "Restablecer contraseña",
+        "resetTwoFactor": "Reiniciar verificación en 2 pasos",
+        "resetTwoFactorBody": "Para cuando pierde el teléfono. Se borran su configuración y sus códigos de respaldo, se cierran sus sesiones y deberá configurarla de nuevo al entrar.",
+        "resetTwoFactorConfirm": "Reiniciar 2FA",
+        "deactivate": "Desactivar cuenta",
+        "deactivateBody": "No podrá iniciar sesión y se cierran sus sesiones de inmediato. Su historial se conserva.",
+        "deactivateWork": "Tiene {clients} clientes y {reminders} recordatorios pendientes. Elige a qué agente pasan; cada cambio queda en el historial del cliente.",
+        "reassignTo": "Pasar a",
+        "deactivateConfirm": "Desactivar",
+        "reactivate": "Reactivar cuenta",
+        "reactivateBody": "Podrá volver a iniciar sesión con su contraseña actual. Los clientes reasignados no regresan automáticamente.",
+        "reactivateConfirm": "Reactivar",
+        "selfNote": "Tu propia contraseña se cambia en Mi cuenta. No puedes desactivarte ni reiniciar tu propia 2FA.",
+        "working": "Procesando…"
+      },
+      "fieldErrors": {
+        "required": "Este campo es obligatorio.",
+        "tooLong": "Es demasiado largo.",
+        "invalidName": "Usa solo letras, espacios, apóstrofo o guion.",
+        "invalidEmail": "El correo no es válido.",
+        "duplicate": "Ya existe un usuario con ese correo.",
+        "tooShort": "Mínimo {min} caracteres.",
+        "mismatch": "Las contraseñas no coinciden.",
+        "invalidOption": "Elige una opción válida.",
+        "self": "No puedes cambiar tu propio rol.",
+        "lastAdmin": "Debe quedar al menos un administrador activo."
+      },
+      "actionErrors": {
+        "self": "No puedes hacer esto con tu propia cuenta.",
+        "lastAdmin": "Debe quedar al menos un administrador activo.",
+        "reassign": "Elige un agente activo para recibir sus clientes y recordatorios."
       }
     },
     "carriers": {
@@ -474,6 +552,93 @@
         "invalid": "El nombre no es válido (2 a 80 caracteres).",
         "generic": "No se pudo completar la acción. Inténtalo de nuevo."
       }
+    },
+    "conditions": {
+      "title": "Condiciones crónicas",
+      "subtitle": "Lista que aparece en el formulario del cliente y en los filtros. Desactivar una condición no la quita a los clientes que ya la tienen: solo deja de ofrecerse.",
+      "add": "Agregar condición",
+      "addTitle": "Nueva condición",
+      "editTitle": "Editar condición",
+      "nameEs": "Nombre en español",
+      "nameEn": "Nombre en inglés",
+      "columns": {
+        "order": "Orden",
+        "condition": "Condición",
+        "status": "Estado",
+        "clients": "Clientes",
+        "actions": "Acciones"
+      },
+      "active": "Activa",
+      "inactive": "Inactiva",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "edit": "Editar",
+      "moveUp": "Subir {name}",
+      "moveDown": "Bajar {name}",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "toast": {
+        "created": "Condición agregada.",
+        "updated": "Cambios guardados."
+      },
+      "errors": {
+        "forbidden": "No tienes permiso para configurar catálogos.",
+        "notFound": "La condición ya no existe.",
+        "conflict": "Ya existe una condición con ese nombre.",
+        "invalid": "Revisa los datos.",
+        "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+      }
+    },
+    "consents": {
+      "title": "Tipos de consentimiento",
+      "subtitle": "Tipos que se podrán registrar en cada cliente (SOA y permisos de contacto). La vigencia y si requiere documento las defines tú: el sistema no asume reglas de CMS.",
+      "note": "El registro de consentimientos en el perfil del cliente llega en una etapa posterior; aquí se prepara el catálogo.",
+      "add": "Agregar tipo",
+      "addTitle": "Nuevo tipo de consentimiento",
+      "editTitle": "Editar tipo de consentimiento",
+      "nameEs": "Nombre en español",
+      "nameEn": "Nombre en inglés",
+      "requiresDocument": "Requiere documento firmado",
+      "validity": "Vigencia por defecto (días)",
+      "validityHint": "Déjalo vacío si no vence. Máximo 3650.",
+      "noExpiry": "No vence",
+      "days": "{count, plural, one {# día} other {# días}}",
+      "yes": "Sí",
+      "no": "No",
+      "columns": {
+        "type": "Tipo",
+        "code": "Código",
+        "document": "Documento",
+        "validity": "Vigencia",
+        "status": "Estado",
+        "records": "Registros",
+        "actions": "Acciones"
+      },
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "edit": "Editar",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "toast": {
+        "created": "Tipo agregado.",
+        "updated": "Cambios guardados."
+      },
+      "errors": {
+        "forbidden": "No tienes permiso para configurar catálogos.",
+        "notFound": "El tipo ya no existe.",
+        "conflict": "Ya existe un tipo con ese código.",
+        "invalid": "Revisa los datos.",
+        "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+      }
+    },
+    "fieldErrors": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "Es demasiado largo.",
+      "invalidName": "Contiene caracteres no permitidos.",
+      "invalidNumber": "Escribe un número entero de días (1 o más).",
+      "tooLarge": "Máximo 3650 días."
     }
   },
   "GlobalSearch": {

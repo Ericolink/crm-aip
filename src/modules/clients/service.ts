@@ -421,13 +421,19 @@ export async function getClientForEdit(user: CurrentUser, clientId: string) {
   };
 }
 
-/** Opciones para el formulario: catálogo de condiciones y, si puede asignar, los agentes. */
-export async function getClientFormOptions(user: CurrentUser) {
+/**
+ * Opciones para el formulario: catálogo de condiciones y, si puede asignar, los agentes.
+ * `keepConditionIds`: condiciones que el cliente ya tiene; aparecen aunque se hayan
+ * desactivado en el catálogo, para poder conservarlas o quitarlas.
+ */
+export async function getClientFormOptions(user: CurrentUser, keepConditionIds: string[] = []) {
   const [conditions, agents] = await Promise.all([
     prisma.chronicCondition.findMany({
-      where: { isActive: true },
+      where: keepConditionIds.length
+        ? { OR: [{ isActive: true }, { id: { in: keepConditionIds } }] }
+        : { isActive: true },
       orderBy: { sortOrder: "asc" },
-      select: { id: true, nameEs: true, nameEn: true },
+      select: { id: true, nameEs: true, nameEn: true, isActive: true },
     }),
     user.permissions.has(PERMISSIONS.CLIENT_ASSIGN)
       ? prisma.user.findMany({
@@ -625,9 +631,12 @@ async function syncConditions(
   conditionIds: string[],
   customConditions: string[],
 ) {
+  const existing = await tx.clientCondition.findMany({ where: { clientId, deletedAt: null } });
+  const linkedIds = existing.flatMap((cc) => (cc.conditionId ? [cc.conditionId] : []));
+  // Una condición desactivada en el catálogo se puede conservar, pero no asignar de nuevo.
   const catalog = await tx.chronicCondition.findMany({
-    where: { isActive: true },
-    select: { id: true, nameEs: true, nameEn: true },
+    where: { OR: [{ isActive: true }, { id: { in: linkedIds } }] },
+    select: { id: true, nameEs: true, nameEn: true, isActive: true },
   });
   const catalogIds = new Set(catalog.map((c) => c.id));
   if (conditionIds.some((id) => !catalogIds.has(id)))
@@ -639,14 +648,14 @@ async function syncConditions(
   for (const name of customConditions) {
     const match = catalog.find(
       (c) =>
-        c.nameEs.toLowerCase() === name.toLowerCase() ||
-        c.nameEn.toLowerCase() === name.toLowerCase(),
+        c.isActive &&
+        (c.nameEs.toLowerCase() === name.toLowerCase() ||
+          c.nameEn.toLowerCase() === name.toLowerCase()),
     );
     if (match) desiredIds.add(match.id);
     else desiredCustom.set(name.toLowerCase(), name);
   }
 
-  const existing = await tx.clientCondition.findMany({ where: { clientId, deletedAt: null } });
   const label = (id: string) => catalog.find((c) => c.id === id)?.nameEn ?? id;
 
   for (const cc of existing) {

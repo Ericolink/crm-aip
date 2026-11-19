@@ -5,13 +5,19 @@ import { useState, type FormEvent } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/client";
 import { PASSWORD_POLICY } from "@/lib/auth/policy";
 import { authErrorKey, type AuthErrorKey } from "@/modules/auth/auth-errors";
 
 type FormError = AuthErrorKey | "tooShort" | "mismatch";
 
-export function ChangePasswordForm() {
+/**
+ * Cambiar la contraseña. Con `forced`, es el paso obligatorio tras una contraseña puesta por
+ * un administrador: al terminar continúa al sistema (o a configurar la 2FA si falta).
+ */
+export function ChangePasswordForm({ forced = false }: { forced?: boolean }) {
+  const router = useRouter();
   const t = useTranslations("Account");
   const tErr = useTranslations("Errors");
   const [error, setError] = useState<FormError | null>(null);
@@ -28,6 +34,7 @@ export function ChangePasswordForm() {
 
     if (newPassword.length < PASSWORD_POLICY.minLength) return setError("tooShort");
     if (newPassword !== String(form.get("confirm") ?? "")) return setError("mismatch");
+    if (newPassword === currentPassword) return setError("passwordReused");
 
     setPending(true);
     setError(null);
@@ -43,6 +50,11 @@ export function ChangePasswordForm() {
       return setError(key === "invalidCredentials" ? "wrongPassword" : key);
     }
     formEl.reset();
+    if (forced) {
+      router.replace("/dashboard");
+      router.refresh();
+      return;
+    }
     setDone(true);
   }
 
@@ -57,11 +69,11 @@ export function ChangePasswordForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex max-w-sm flex-col gap-3" noValidate>
-      <h3 className="font-semibold">{t("changePassword")}</h3>
+      {!forced && <h3 className="font-semibold">{t("changePassword")}</h3>}
       {message && <Alert tone="error">{message}</Alert>}
       {done && <Alert tone="success">{t("passwordChanged")}</Alert>}
       <Field
-        label={t("currentPassword")}
+        label={forced ? t("temporaryPassword") : t("currentPassword")}
         name="current"
         type="password"
         autoComplete="current-password"
@@ -83,7 +95,7 @@ export function ChangePasswordForm() {
         autoComplete="new-password"
         required
       />
-      <Button type="submit" size="sm" disabled={pending} className="self-start">
+      <Button type="submit" size="sm" disabled={pending} className={forced ? "" : "self-start"}>
         {pending ? t("savingPassword") : t("savePassword")}
       </Button>
     </form>
