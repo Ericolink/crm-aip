@@ -85,21 +85,23 @@ model ConsentType {
 
 /// Directorio de médicos compartido entre clientes (un PCP puede atender a muchos clientes).
 model Doctor {
-  id        String   @id @default(cuid())
-  name      String
-  specialty String?
-  clinic    String?
-  phone     String?
-  address   String?
+  id         String   @id @default(cuid())
+  name       String
+  specialty  String?
+  clinic     String?
+  phone      String?
+  address    String?
   /// National Provider Identifier (opcional, público).
-  npi       String?  @unique
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  npi        String?  @unique
+  isActive   Boolean  @default(true)
+  /// Nombre, especialidad y clínica normalizados (minúsculas, sin acentos). Lo mantiene un TRIGGER.
+  searchText String   @default("")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   clients ClientDoctor[]
 
-  @@index([name(ops: raw("gin_trgm_ops"))], type: Gin, map: "doctors_name_trgm_idx")
+  @@index([searchText(ops: raw("gin_trgm_ops"))], type: Gin, map: "doctors_search_text_trgm_idx")
   @@map("doctors")
 }
 

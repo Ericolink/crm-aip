@@ -531,5 +531,75 @@
     },
     "comingSoon": "Esta sección llega en la Etapa {stage}.",
     "noAccess": "Tu rol no permite ver esta sección."
+  },
+  "Doctors": {
+    "pcpTitle": "Médico primario (PCP)",
+    "specialistsTitle": "Especialistas",
+    "noPcp": "Sin PCP registrado.",
+    "noSpecialists": "Sin especialistas registrados.",
+    "pcpBadge": "PCP",
+    "add": "Agregar médico",
+    "edit": "Editar",
+    "remove": "Quitar",
+    "sharedWith": "{count, plural, one {Solo este cliente} other {Compartido con # clientes}}",
+    "fields": {
+      "name": "Nombre del médico",
+      "specialty": "Especialidad",
+      "clinic": "Clínica u hospital",
+      "phone": "Teléfono",
+      "address": "Dirección",
+      "npi": "NPI (opcional)",
+      "role": "Tipo",
+      "notes": "Notas para este cliente"
+    },
+    "roles": {
+      "PCP": "Médico primario (PCP)",
+      "SPECIALIST": "Especialista"
+    },
+    "dialog": {
+      "addTitle": "Agregar médico",
+      "editTitle": "Editar médico",
+      "searchLabel": "Buscar en el directorio",
+      "searchPlaceholder": "Nombre, especialidad o clínica",
+      "searching": "Buscando…",
+      "noResults": "No se encontró en el directorio.",
+      "choose": "Elegir",
+      "chosen": "Seleccionado: {name}",
+      "change": "Cambiar",
+      "createNew": "Crear médico nuevo",
+      "backToSearch": "Buscar en el directorio",
+      "newDoctorTitle": "Datos del médico",
+      "pcpWarning": "{name} es el PCP actual y pasará a especialista.",
+      "sharedWarning": "Los datos del médico (nombre, especialidad, clínica, teléfono, dirección y NPI) se comparten con {count} clientes; los cambios se verán en todos. El tipo y las notas son solo de este cliente.",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "cancel": "Cancelar"
+    },
+    "removeDialog": {
+      "title": "¿Quitar a {name}?",
+      "body": "Dejará de aparecer en los médicos de este cliente. Queda en el historial y sigue en el directorio.",
+      "confirm": "Quitar médico",
+      "removing": "Quitando…"
+    },
+    "toast": {
+      "added": "Médico agregado.",
+      "updated": "Médico actualizado.",
+      "removed": "Médico quitado."
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "El texto es demasiado largo.",
+      "invalidPhone": "El teléfono debe tener 10 dígitos.",
+      "invalidNpi": "El NPI tiene 10 dígitos.",
+      "invalidOption": "La opción seleccionada no es válida.",
+      "duplicate": "Ese valor ya está registrado."
+    },
+    "errors": {
+      "forbidden": "No tienes permiso para esta acción.",
+      "notFound": "El médico o el cliente no existe o no tienes acceso.",
+      "conflict": "Ese médico ya está en la lista de este cliente (o el NPI ya existe).",
+      "invalid": "Revisa los campos marcados.",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+    }
   }
 }

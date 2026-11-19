@@ -15,6 +15,7 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
 
   const t = await getTranslations("Clients");
   const ti = await getTranslations("Insurance");
+  const tp = await getTranslations("Profile");
   const locale = (await getLocale()) as "es" | "en";
   const age = ageFrom(client.dateOfBirth);
   const dash = t("detail.notProvided");
@@ -95,7 +96,17 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
         )}
         {client.access.medical && (
           <>
-            <Card title={t("detail.pcp")}>
+            <Card
+              title={t("detail.pcp")}
+              action={
+                <Link
+                  href={`/clients/${client.id}/doctors`}
+                  className="text-primary text-[13px] font-medium hover:underline"
+                >
+                  {tp("tabs.doctors")}
+                </Link>
+              }
+            >
               {client.pcp ? (
                 <p className="text-sm">
                   <span className="font-semibold">{client.pcp.name}</span>

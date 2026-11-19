@@ -1,7 +1,7 @@
 # CRM de seguros médicos — Arquitectura y planificación
 
 > Documento vivo. Registra las decisiones técnicas aprobadas. Última actualización: 2026-11-18.
-> Estado: Fases 1–2 aprobadas · Etapas 0–4 completadas · **Etapa 5 (aseguradoras, coberturas con historial y perfil) en revisión**.
+> Estado: Fases 1–2 aprobadas · Etapas 0–5 completadas · **Etapa 6 (médicos) en revisión**.
 > Decisiones detalladas en [`docs/adr/`](adr/).
 
 **Aviso:** este sistema se diseña considerando los requisitos de HIPAA (Privacy & Security Rules), pero **no se afirma que sea "HIPAA compliant"** hasta que su infraestructura, proveedores (BAA), contratos, controles y procedimientos sean revisados y validados formalmente.
@@ -135,7 +135,7 @@ Identidad: Inter; primario `#2346A8`; fondo `#F5F6F8`; estatus Nuevo (azul), Pen
 2. ✅ Esquema de BD + cifrado + seed ficticio
 3. ✅ CRUD de clientes · ✅ Vínculos asistente ↔ agente (Configuración → Usuarios)
 4. ✅ Búsqueda, filtros combinados, orden y estatus desde la tabla
-5. **En revisión:** Configuración de aseguradoras × programas (alta, edición, activar/desactivar y relaciones con Medicare/Medicaid/ACA) + Perfil con 6 pestañas + aseguranzas con historial
-6. Médicos · 7. Medicamentos · 8. Notas + actividad · 9. Dashboard · 10. Recordatorios · 11. Importar/exportar
+5. ✅ Configuración de aseguradoras × programas (alta, edición, activar/desactivar y relaciones con Medicare/Medicaid/ACA) + Perfil con 6 pestañas + aseguranzas con historial
+6. **En revisión:** Médicos (directorio compartido, PCP único, especialistas) · 7. Medicamentos · 8. Notas + actividad · 9. Dashboard · 10. Recordatorios · 11. Importar/exportar
 7. Administración de usuarios (crear, roles, desactivar), condiciones crónicas y tipos de consentimiento
 8. Endurecimiento, pruebas y checklist HIPAA

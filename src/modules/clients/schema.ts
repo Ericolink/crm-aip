@@ -42,7 +42,7 @@ const requiredName = z
   .min(1, { message: "required" })
   .max(80, { message: "tooLong" });
 
-const optionalPhone = z
+export const optionalPhone = z
   .string()
   .optional()
   .transform((v) => (v ? phoneDigits(v) : undefined))

@@ -531,5 +531,75 @@
     },
     "comingSoon": "This section arrives in Stage {stage}.",
     "noAccess": "Your role cannot view this section."
+  },
+  "Doctors": {
+    "pcpTitle": "Primary care physician (PCP)",
+    "specialistsTitle": "Specialists",
+    "noPcp": "No PCP recorded.",
+    "noSpecialists": "No specialists recorded.",
+    "pcpBadge": "PCP",
+    "add": "Add doctor",
+    "edit": "Edit",
+    "remove": "Remove",
+    "sharedWith": "{count, plural, one {Only this client} other {Shared with # clients}}",
+    "fields": {
+      "name": "Doctor name",
+      "specialty": "Specialty",
+      "clinic": "Clinic or hospital",
+      "phone": "Phone",
+      "address": "Address",
+      "npi": "NPI (optional)",
+      "role": "Type",
+      "notes": "Notes for this client"
+    },
+    "roles": {
+      "PCP": "Primary care physician (PCP)",
+      "SPECIALIST": "Specialist"
+    },
+    "dialog": {
+      "addTitle": "Add doctor",
+      "editTitle": "Edit doctor",
+      "searchLabel": "Search the directory",
+      "searchPlaceholder": "Name, specialty or clinic",
+      "searching": "Searching…",
+      "noResults": "Not found in the directory.",
+      "choose": "Choose",
+      "chosen": "Selected: {name}",
+      "change": "Change",
+      "createNew": "Create new doctor",
+      "backToSearch": "Search the directory",
+      "newDoctorTitle": "Doctor details",
+      "pcpWarning": "{name} is the current PCP and will become a specialist.",
+      "sharedWarning": "Doctor details (name, specialty, clinic, phone, address and NPI) are shared with {count} clients; changes will show for all of them. Type and notes apply to this client only.",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "removeDialog": {
+      "title": "Remove {name}?",
+      "body": "They will no longer appear among this client’s doctors. It stays in the history and in the directory.",
+      "confirm": "Remove doctor",
+      "removing": "Removing…"
+    },
+    "toast": {
+      "added": "Doctor added.",
+      "updated": "Doctor updated.",
+      "removed": "Doctor removed."
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "The text is too long.",
+      "invalidPhone": "Phone number must have 10 digits.",
+      "invalidNpi": "The NPI has 10 digits.",
+      "invalidOption": "The selected option is not valid.",
+      "duplicate": "That value is already registered."
+    },
+    "errors": {
+      "forbidden": "You do not have permission for this action.",
+      "notFound": "The doctor or client does not exist or you do not have access.",
+      "conflict": "That doctor is already on this client’s list (or the NPI already exists).",
+      "invalid": "Check the highlighted fields.",
+      "generic": "The action could not be completed. Please try again."
+    }
   }
 }
