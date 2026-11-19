@@ -28,7 +28,7 @@ export type ProgramCode = (typeof PROGRAM_CODES)[number];
 const MAX_TEXT = 120;
 
 /** Texto opcional: "" o espacios → undefined. */
-const optionalText = (max = MAX_TEXT) =>
+export const optionalText = (max = MAX_TEXT) =>
   z
     .string()
     .trim()
@@ -49,7 +49,7 @@ const optionalPhone = z
   .refine((v) => v === undefined || v === "" || /^\d{10}$/.test(v), { message: "invalidPhone" })
   .transform((v) => (v ? v : undefined));
 
-const optionalDate = z
+export const optionalDate = z
   .string()
   .optional()
   .refine((v) => !v || parseDateOnly(v) !== null, { message: "invalidDate" })
@@ -73,7 +73,7 @@ const optionalZip = z
  * Número sensible. Vacío = no cambiar (en edición nunca se envía el valor guardado).
  * Se valida el formato aquí; el cifrado ocurre en el servidor.
  */
-const sensitiveNumber = (pattern: RegExp) =>
+export const sensitiveNumber = (pattern: RegExp) =>
   z
     .string()
     .optional()

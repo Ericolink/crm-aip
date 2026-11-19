@@ -394,11 +394,142 @@
         "generic": "The action could not be completed. Please try again.",
         "conflict": "The link already exists."
       }
+    },
+    "carriers": {
+      "title": "Carriers & programs",
+      "subtitle": "Turn on the programs each carrier offers. Only active carriers with an active relationship appear when recording coverage.",
+      "noLinks": "No relationships configured yet. No carrier will appear when recording coverage until you turn on at least one program.",
+      "add": "Add carrier",
+      "addPlaceholder": "Brand name",
+      "adding": "Adding…",
+      "columns": {
+        "carrier": "Carrier",
+        "status": "Status",
+        "current": "Current coverages",
+        "actions": "Actions"
+      },
+      "active": "Active",
+      "inactive": "Inactive",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "rename": "Rename",
+      "renameTitle": "Rename {name}",
+      "save": "Save",
+      "cancel": "Cancel",
+      "toggle": "{carrier} offers {program}",
+      "rules": {
+        "title": "How it works",
+        "r1": "No relationship is assumed: you decide what each carrier offers.",
+        "r2": "You can add ACA-only carriers without mixing them with Medicare or Medicaid.",
+        "r3": "Deactivating a carrier or a relationship does not delete existing coverage; it just stops being offered for new records.",
+        "r4": "Every change is written to the audit log."
+      },
+      "toast": {
+        "created": "Carrier added.",
+        "updated": "Changes saved.",
+        "linked": "Relationship updated."
+      },
+      "errors": {
+        "forbidden": "You do not have permission to configure carriers.",
+        "notFound": "The carrier does not exist.",
+        "conflict": "A carrier with that name already exists.",
+        "invalid": "The name is not valid (2 to 80 characters).",
+        "generic": "The action could not be completed. Please try again."
+      }
     }
   },
   "GlobalSearch": {
     "label": "Search client",
     "placeholder": "Search client: name, phone, email…",
     "shortcut": "Shortcut: Ctrl K"
+  },
+  "Insurance": {
+    "programsTitle": "Beneficiary programs",
+    "programsHelp": "Client Medicare and Medicaid details; they do not change when the carrier changes. Edit them from Edit client.",
+    "noPrograms": "The client has no programs recorded. Add them from Edit client.",
+    "currentTitle": "Current coverage",
+    "noCurrent": "No current coverage.",
+    "historyTitle": "Coverage history",
+    "historyNote": "Previous records are never overwritten.",
+    "noHistory": "No previous coverage.",
+    "add": "Record coverage",
+    "edit": "Edit",
+    "change": "Change carrier",
+    "end": "End",
+    "program": "Program",
+    "carrier": "Carrier",
+    "plan": "Plan",
+    "status": "Status",
+    "member": "Member #",
+    "confirmation": "Confirmation #",
+    "submitted": "Application sent",
+    "effective": "Effective date",
+    "endDate": "End date",
+    "reason": "Reason for change",
+    "writingAgent": "Agent",
+    "replacedBy": "Replaced by {carrier}",
+    "current": "Current",
+    "present": "present",
+    "statuses": {
+      "APPLICATION_PENDING": "Application pending",
+      "ACTIVE": "Active",
+      "ENDED": "Ended",
+      "CANCELLED": "Cancelled",
+      "DENIED": "Denied"
+    },
+    "noCarriers": "No carriers are configured for {program}.",
+    "configureCarriers": "Configure carriers",
+    "dialog": {
+      "addTitle": "Record coverage",
+      "editTitle": "Edit coverage",
+      "changeTitle": "Change carrier",
+      "changeHelp": "The current coverage with {carrier} will be closed and kept in the history.",
+      "previousEndDate": "End of previous coverage",
+      "previousEndHint": "If empty: the day before the new effective date.",
+      "endTitle": "End coverage",
+      "endHelp": "The coverage will no longer be current and will be kept in the history.",
+      "endStatus": "Outcome",
+      "savedNumber": "Saved: {masked}. Leave empty to keep it.",
+      "encrypted": "Stored encrypted",
+      "choose": "Select…",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "confirmEnd": "End coverage"
+    },
+    "toast": {
+      "added": "Coverage recorded.",
+      "updated": "Coverage updated.",
+      "changed": "Carrier change recorded.",
+      "ended": "Coverage ended."
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "The text is too long.",
+      "invalidDate": "Enter a valid date.",
+      "invalidIdentifier": "The number does not have a valid format.",
+      "invalidOption": "The selected option is not valid for this program.",
+      "duplicate": "There is already a current coverage for this program."
+    },
+    "errors": {
+      "forbidden": "You do not have permission for this action.",
+      "notFound": "The coverage does not exist or you do not have access.",
+      "conflict": "There is already a current coverage for this program. Use “Change carrier”.",
+      "invalid": "Check the highlighted fields.",
+      "generic": "The action could not be completed. Please try again."
+    }
+  },
+  "Profile": {
+    "tabs": {
+      "label": "Client sections",
+      "overview": "Overview",
+      "insurance": "Insurance",
+      "doctors": "Doctors",
+      "medications": "Medications",
+      "notes": "Notes",
+      "activity": "Activity"
+    },
+    "comingSoon": "This section arrives in Stage {stage}.",
+    "noAccess": "Your role cannot view this section."
   }
 }

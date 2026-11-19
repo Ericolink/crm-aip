@@ -43,6 +43,7 @@ export default async function ClientsPage({
   const to = Math.min(params.page * PAGE_SIZE, total);
   const canChangeStatus = clientEditScope(user) === "full";
   const showAgent = options.agents.length > 0;
+  const showCoverage = options.seesInsurance;
   const filtered = hasActiveFilters(params);
   const createdFmt = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-US", {
     timeZone: "America/New_York",
@@ -100,14 +101,18 @@ export default async function ClientsPage({
                 <tr className="text-left text-xs font-semibold text-[#4a5366]">
                   <SortableTh params={params} label={t("columns.client")} asc="name_asc" />
                   <Th>{t("columns.status")}</Th>
-                  <Th>{t("columns.programs")}</Th>
-                  <Th>{t("columns.carrier")}</Th>
-                  <SortableTh
-                    params={params}
-                    label={t("columns.effective")}
-                    asc="effective_asc"
-                    desc="effective_desc"
-                  />
+                  {showCoverage && (
+                    <>
+                      <Th>{t("columns.programs")}</Th>
+                      <Th>{t("columns.carrier")}</Th>
+                      <SortableTh
+                        params={params}
+                        label={t("columns.effective")}
+                        asc="effective_asc"
+                        desc="effective_desc"
+                      />
+                    </>
+                  )}
                   {showAgent && <Th>{t("filters.agentColumn")}</Th>}
                   <SortableTh
                     params={params}
@@ -162,22 +167,26 @@ export default async function ClientsPage({
                           <StatusBadge status={status} label={t(`status.${status}`)} />
                         )}
                       </td>
-                      <td className="px-3.5 py-3">
-                        <div className="flex flex-wrap gap-1">
-                          {c.programs.map((p) => (
-                            <span
-                              key={p}
-                              className="border-border-strong rounded-md border bg-[#f8f9fb] px-1.5 py-0.5 text-xs font-medium"
-                            >
-                              {t(`programs.${p}` as "programs.ACA")}
-                            </span>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-3.5 py-3">{c.currentCarrier ?? "—"}</td>
-                      <td className="px-3.5 py-3">
-                        {formatDateOnly(c.effectiveDate, locale) || "—"}
-                      </td>
+                      {showCoverage && (
+                        <>
+                          <td className="px-3.5 py-3">
+                            <div className="flex flex-wrap gap-1">
+                              {c.programs.map((p) => (
+                                <span
+                                  key={p}
+                                  className="border-border-strong rounded-md border bg-[#f8f9fb] px-1.5 py-0.5 text-xs font-medium"
+                                >
+                                  {t(`programs.${p}` as "programs.ACA")}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-3.5 py-3">{c.currentCarrier ?? "—"}</td>
+                          <td className="px-3.5 py-3">
+                            {formatDateOnly(c.effectiveDate, locale) || "—"}
+                          </td>
+                        </>
+                      )}
                       {showAgent && <td className="px-3.5 py-3">{c.assignedAgentName ?? "—"}</td>}
                       <td className="text-muted px-3.5 py-3">{createdFmt.format(c.createdAt)}</td>
                       <td className="px-3.5 py-3">

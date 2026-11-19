@@ -394,11 +394,142 @@
         "generic": "No se pudo completar la acción. Inténtalo de nuevo.",
         "conflict": "El vínculo ya existe."
       }
+    },
+    "carriers": {
+      "title": "Aseguradoras y programas",
+      "subtitle": "Activa qué programas ofrece cada aseguradora. Solo las aseguradoras activas con la relación activa aparecen al registrar una cobertura.",
+      "noLinks": "Todavía no hay relaciones configuradas. Ninguna aseguradora aparecerá al registrar coberturas hasta que actives al menos un programa.",
+      "add": "Agregar aseguradora",
+      "addPlaceholder": "Nombre comercial",
+      "adding": "Agregando…",
+      "columns": {
+        "carrier": "Aseguradora",
+        "status": "Estado",
+        "current": "Coberturas actuales",
+        "actions": "Acciones"
+      },
+      "active": "Activa",
+      "inactive": "Inactiva",
+      "activate": "Activar",
+      "deactivate": "Desactivar",
+      "rename": "Cambiar nombre",
+      "renameTitle": "Cambiar el nombre de {name}",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "toggle": "{carrier} ofrece {program}",
+      "rules": {
+        "title": "Cómo funciona",
+        "r1": "El sistema no asume ninguna relación: tú decides qué ofrece cada aseguradora.",
+        "r2": "Puedes agregar aseguradoras solo para ACA, sin mezclarlas con Medicare o Medicaid.",
+        "r3": "Desactivar una aseguradora o una relación no borra coberturas existentes: solo deja de ofrecerse en nuevos registros.",
+        "r4": "Cada cambio queda registrado en la auditoría."
+      },
+      "toast": {
+        "created": "Aseguradora agregada.",
+        "updated": "Cambios guardados.",
+        "linked": "Relación actualizada."
+      },
+      "errors": {
+        "forbidden": "No tienes permiso para configurar aseguradoras.",
+        "notFound": "La aseguradora no existe.",
+        "conflict": "Ya existe una aseguradora con ese nombre.",
+        "invalid": "El nombre no es válido (2 a 80 caracteres).",
+        "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+      }
     }
   },
   "GlobalSearch": {
     "label": "Buscar cliente",
     "placeholder": "Buscar cliente: nombre, teléfono, correo…",
     "shortcut": "Atajo: Ctrl K"
+  },
+  "Insurance": {
+    "programsTitle": "Programas del beneficiario",
+    "programsHelp": "Datos de Medicare y Medicaid del cliente; no cambian al cambiar de aseguradora. Se editan desde Editar cliente.",
+    "noPrograms": "El cliente no tiene programas registrados. Agrégalos desde Editar cliente.",
+    "currentTitle": "Coberturas actuales",
+    "noCurrent": "Sin cobertura actual.",
+    "historyTitle": "Historial de aseguranzas",
+    "historyNote": "Los registros anteriores nunca se sobrescriben.",
+    "noHistory": "Sin coberturas anteriores.",
+    "add": "Registrar cobertura",
+    "edit": "Editar",
+    "change": "Cambiar aseguradora",
+    "end": "Terminar",
+    "program": "Programa",
+    "carrier": "Aseguradora",
+    "plan": "Plan",
+    "status": "Estado",
+    "member": "Nº de miembro",
+    "confirmation": "Nº de confirmación",
+    "submitted": "Solicitud enviada",
+    "effective": "Fecha efectiva",
+    "endDate": "Fecha de fin",
+    "reason": "Motivo del cambio",
+    "writingAgent": "Agente",
+    "replacedBy": "Reemplazada por {carrier}",
+    "current": "Actual",
+    "present": "presente",
+    "statuses": {
+      "APPLICATION_PENDING": "Solicitud pendiente",
+      "ACTIVE": "Activa",
+      "ENDED": "Finalizada",
+      "CANCELLED": "Cancelada",
+      "DENIED": "Denegada"
+    },
+    "noCarriers": "No hay aseguradoras configuradas para {program}.",
+    "configureCarriers": "Configurar aseguradoras",
+    "dialog": {
+      "addTitle": "Registrar cobertura",
+      "editTitle": "Editar cobertura",
+      "changeTitle": "Cambiar de aseguradora",
+      "changeHelp": "La cobertura actual con {carrier} se cerrará y quedará en el historial.",
+      "previousEndDate": "Fin de la cobertura anterior",
+      "previousEndHint": "Si lo dejas vacío: el día antes de la nueva fecha efectiva.",
+      "endTitle": "Terminar cobertura",
+      "endHelp": "La cobertura dejará de ser la actual y quedará en el historial.",
+      "endStatus": "Resultado",
+      "savedNumber": "Guardado: {masked}. Déjalo vacío para no cambiarlo.",
+      "encrypted": "Se guarda cifrado",
+      "choose": "Selecciona…",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "cancel": "Cancelar",
+      "confirmEnd": "Terminar cobertura"
+    },
+    "toast": {
+      "added": "Cobertura registrada.",
+      "updated": "Cobertura actualizada.",
+      "changed": "Cambio de aseguradora registrado.",
+      "ended": "Cobertura terminada."
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "El texto es demasiado largo.",
+      "invalidDate": "Ingresa una fecha válida.",
+      "invalidIdentifier": "El número no tiene un formato válido.",
+      "invalidOption": "La opción seleccionada no es válida para este programa.",
+      "duplicate": "Ya existe una cobertura actual para este programa."
+    },
+    "errors": {
+      "forbidden": "No tienes permiso para esta acción.",
+      "notFound": "La cobertura no existe o no tienes acceso.",
+      "conflict": "Ya existe una cobertura actual para este programa. Usa “Cambiar aseguradora”.",
+      "invalid": "Revisa los campos marcados.",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+    }
+  },
+  "Profile": {
+    "tabs": {
+      "label": "Secciones del cliente",
+      "overview": "Resumen",
+      "insurance": "Aseguranzas",
+      "doctors": "Médicos",
+      "medications": "Medicamentos",
+      "notes": "Notas",
+      "activity": "Actividad"
+    },
+    "comingSoon": "Esta sección llega en la Etapa {stage}.",
+    "noAccess": "Tu rol no permite ver esta sección."
   }
 }

@@ -123,15 +123,20 @@ export function buildClientWhere(
     and.push(or.length ? { OR: or } : { id: { in: [] } });
   }
 
+  // Filtros que revelan cobertura o salud: solo con el permiso correspondiente
+  // (si no, se ignoran: p. ej. filtrar por "diabetes" revelaría quién la tiene).
+  const seesInsurance = user.permissions.has(PERMISSIONS.INSURANCE_READ);
+  const seesMedical = user.permissions.has(PERMISSIONS.MEDICAL_READ);
+
   if (p.statuses.length && !options.ignoreStatus) and.push({ status: { in: p.statuses } });
-  if (p.program)
+  if (p.program && seesInsurance)
     and.push({ programs: { some: { deletedAt: null, program: { code: p.program } } } });
-  if (p.carrierId) {
+  if (p.carrierId && seesInsurance) {
     and.push({
       insurances: { some: { deletedAt: null, isCurrent: true, carrierId: p.carrierId } },
     });
   }
-  if (p.conditionId) {
+  if (p.conditionId && seesMedical) {
     and.push({ conditions: { some: { deletedAt: null, conditionId: p.conditionId } } });
   }
   if (p.agentId) {
@@ -149,7 +154,7 @@ export function buildClientWhere(
       },
     });
   }
-  if (p.effectiveFrom || p.effectiveTo) {
+  if ((p.effectiveFrom || p.effectiveTo) && seesInsurance) {
     and.push({
       currentEffectiveDate: {
         ...(p.effectiveFrom ? { gte: asDate(p.effectiveFrom) } : {}),

@@ -128,7 +128,12 @@ export async function listClients(
     prisma.client.count({ where }),
     prisma.client.findMany({
       where,
-      orderBy: clientOrderBy(params.sort),
+      // Ordenar por fecha efectiva revela datos de cobertura: sin permiso, orden por defecto.
+      orderBy: clientOrderBy(
+        params.sort.startsWith("effective") && !user.permissions.has(PERMISSIONS.INSURANCE_READ)
+          ? DEFAULT_SORT
+          : params.sort,
+      ),
       skip: (options.page - 1) * options.pageSize,
       take: options.pageSize,
       select: {
@@ -157,6 +162,7 @@ export async function listClients(
     prisma.client.groupBy({ by: ["status"], where: countWhere, _count: { _all: true } }),
   ]);
 
+  const seesInsurance = user.permissions.has(PERMISSIONS.INSURANCE_READ);
   return {
     total,
     statusCounts: Object.fromEntries(grouped.map((g) => [g.status, g._count._all])),
@@ -167,9 +173,10 @@ export async function listClients(
       primaryPhone: r.primaryPhone,
       preferredLanguage: r.preferredLanguage,
       status: r.status,
-      programs: r.programs.map((p) => p.program.code),
-      currentCarrier: r.insurances[0]?.carrier.name ?? null,
-      effectiveDate: r.currentEffectiveDate,
+      // Sin permiso de cobertura, esas columnas no se envían.
+      programs: seesInsurance ? r.programs.map((p) => p.program.code) : [],
+      currentCarrier: seesInsurance ? (r.insurances[0]?.carrier.name ?? null) : null,
+      effectiveDate: seesInsurance ? r.currentEffectiveDate : null,
       assignedAgentName: r.assignedAgent?.name ?? null,
       createdAt: r.createdAt,
     })),
@@ -180,22 +187,31 @@ export async function listClients(
 export async function getClientListOptions(user: CurrentUser) {
   const seesAll = user.permissions.has(PERMISSIONS.CLIENT_READ_ALL);
   const linked = user.linkedAgentIds ?? [];
+  const seesInsurance = user.permissions.has(PERMISSIONS.INSURANCE_READ);
+  const seesMedical = user.permissions.has(PERMISSIONS.MEDICAL_READ);
+  const none = Promise.resolve([] as never[]);
   const [programs, carriers, conditions, agents] = await Promise.all([
-    prisma.coverageProgram.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      select: { code: true, nameEs: true, nameEn: true },
-    }),
-    prisma.insuranceCarrier.findMany({
-      where: { isActive: true },
-      orderBy: { name: "asc" },
-      select: { id: true, name: true },
-    }),
-    prisma.chronicCondition.findMany({
-      where: { isActive: true },
-      orderBy: { sortOrder: "asc" },
-      select: { id: true, nameEs: true, nameEn: true },
-    }),
+    !seesInsurance
+      ? none
+      : prisma.coverageProgram.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          select: { code: true, nameEs: true, nameEn: true },
+        }),
+    !seesInsurance
+      ? none
+      : prisma.insuranceCarrier.findMany({
+          where: { isActive: true },
+          orderBy: { name: "asc" },
+          select: { id: true, name: true },
+        }),
+    !seesMedical
+      ? none
+      : prisma.chronicCondition.findMany({
+          where: { isActive: true },
+          orderBy: { sortOrder: "asc" },
+          select: { id: true, nameEs: true, nameEn: true },
+        }),
     seesAll || linked.length
       ? prisma.user.findMany({
           where: seesAll
@@ -206,7 +222,7 @@ export async function getClientListOptions(user: CurrentUser) {
         })
       : Promise.resolve([]),
   ]);
-  return { programs, carriers, conditions, agents };
+  return { programs, carriers, conditions, agents, seesInsurance, seesMedical };
 }
 
 const detailInclude = {
@@ -243,11 +259,20 @@ export async function getClientDetail(user: CurrentUser, clientId: string) {
     targetId: client.id,
     dedupeWindowSeconds: 10,
   });
-  return toDetailDto(client);
+  return toDetailDto(client, detailAccess(user));
 }
 
-function toDetailDto(c: ClientWithDetail) {
+/** Qué partes del detalle puede ver el usuario. Sin permiso, esos datos ni se envían. */
+export function detailAccess(user: CurrentUser) {
   return {
+    insurance: user.permissions.has(PERMISSIONS.INSURANCE_READ),
+    medical: user.permissions.has(PERMISSIONS.MEDICAL_READ),
+  };
+}
+
+function toDetailDto(c: ClientWithDetail, access: { insurance: boolean; medical: boolean }) {
+  return {
+    access,
     id: c.id,
     firstName: c.firstName,
     lastName: c.lastName,
@@ -279,7 +304,7 @@ function toDetailDto(c: ClientWithDetail) {
     createdByName: c.createdBy.name,
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
-    programs: c.programs.map((p) => ({
+    programs: (access.insurance ? c.programs : []).map((p) => ({
       enrollmentId: p.id,
       code: p.program.code,
       name: { es: p.program.nameEs, en: p.program.nameEn },
@@ -287,13 +312,13 @@ function toDetailDto(c: ClientWithDetail) {
       partAEffectiveDate: p.partAEffectiveDate,
       partBEffectiveDate: p.partBEffectiveDate,
     })),
-    conditions: c.conditions.map((cc) => ({
+    conditions: (access.medical ? c.conditions : []).map((cc) => ({
       id: cc.id,
       name: cc.condition
         ? { es: cc.condition.nameEs, en: cc.condition.nameEn }
         : { es: cc.customName ?? "", en: cc.customName ?? "" },
     })),
-    currentInsurances: c.insurances.map((i) => ({
+    currentInsurances: (access.insurance ? c.insurances : []).map((i) => ({
       id: i.id,
       programCode: i.program.code,
       carrier: i.carrier.name,
@@ -301,7 +326,10 @@ function toDetailDto(c: ClientWithDetail) {
       effectiveDate: i.effectiveDate,
       memberLast4: i.memberNumberLast4,
     })),
-    pcp: c.doctors[0] ? { name: c.doctors[0].doctor.name, phone: c.doctors[0].doctor.phone } : null,
+    pcp:
+      access.medical && c.doctors[0]
+        ? { name: c.doctors[0].doctor.name, phone: c.doctors[0].doctor.phone }
+        : null,
   };
 }
 
@@ -361,6 +389,17 @@ export async function getClientForEdit(user: CurrentUser, clientId: string) {
     customConditions: c.conditions.flatMap((cc) => (cc.customName ? [cc.customName] : [])),
     assignedAgentId: c.assignedAgentId ?? "",
   };
+
+  // Con edición básica (asistente), programas, números y condiciones NO se envían al navegador:
+  // el formulario no los muestra y el servidor los ignora al guardar.
+  if (!canEditMedicalAndPrograms(scope)) {
+    const empty = emptyClientForm();
+    return {
+      values: { ...values, programs: empty.programs, conditionIds: [], customConditions: [] },
+      scope,
+      savedNumbersLast4: { MEDICARE: null, MEDICAID: null },
+    };
+  }
 
   return {
     values,

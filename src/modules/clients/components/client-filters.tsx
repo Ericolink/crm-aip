@@ -13,6 +13,8 @@ import {
 import { CLIENT_STATUSES } from "../schema";
 
 type Options = {
+  seesInsurance: boolean;
+  seesMedical: boolean;
   programs: { code: string; nameEs: string; nameEn: string }[];
   carriers: { id: string; name: string }[];
   conditions: { id: string; nameEs: string; nameEn: string }[];
@@ -150,38 +152,42 @@ export function ClientFilters({
               className="border-border-strong focus:border-primary focus:ring-primary-soft h-10 w-full rounded-lg border pr-3 pl-9 text-sm outline-none focus:ring-3"
             />
           </label>
-          <select
-            aria-label={tf("program")}
-            value={params.program ?? ""}
-            onChange={(e) =>
-              go({ program: (e.target.value || undefined) as ClientListParams["program"] })
-            }
-            className={selectCls}
-          >
-            <option value="">
-              {tf("program")}: {tf("any")}
-            </option>
-            {options.programs.map((p) => (
-              <option key={p.code} value={p.code}>
-                {name(p)}
+          {options.programs.length > 0 && (
+            <select
+              aria-label={tf("program")}
+              value={params.program ?? ""}
+              onChange={(e) =>
+                go({ program: (e.target.value || undefined) as ClientListParams["program"] })
+              }
+              className={selectCls}
+            >
+              <option value="">
+                {tf("program")}: {tf("any")}
               </option>
-            ))}
-          </select>
-          <select
-            aria-label={tf("carrier")}
-            value={params.carrierId ?? ""}
-            onChange={(e) => go({ carrierId: e.target.value || undefined })}
-            className={selectCls}
-          >
-            <option value="">
-              {tf("carrier")}: {tf("any")}
-            </option>
-            {options.carriers.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
+              {options.programs.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {name(p)}
+                </option>
+              ))}
+            </select>
+          )}
+          {options.carriers.length > 0 && (
+            <select
+              aria-label={tf("carrier")}
+              value={params.carrierId ?? ""}
+              onChange={(e) => go({ carrierId: e.target.value || undefined })}
+              className={selectCls}
+            >
+              <option value="">
+                {tf("carrier")}: {tf("any")}
               </option>
-            ))}
-          </select>
+              {options.carriers.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          )}
           {options.agents.length > 0 && (
             <select
               aria-label={tf("agent")}
@@ -199,21 +205,23 @@ export function ClientFilters({
               ))}
             </select>
           )}
-          <select
-            aria-label={tf("condition")}
-            value={params.conditionId ?? ""}
-            onChange={(e) => go({ conditionId: e.target.value || undefined })}
-            className={selectCls}
-          >
-            <option value="">
-              {tf("condition")}: {tf("any")}
-            </option>
-            {options.conditions.map((c) => (
-              <option key={c.id} value={c.id}>
-                {name(c)}
+          {options.conditions.length > 0 && (
+            <select
+              aria-label={tf("condition")}
+              value={params.conditionId ?? ""}
+              onChange={(e) => go({ conditionId: e.target.value || undefined })}
+              className={selectCls}
+            >
+              <option value="">
+                {tf("condition")}: {tf("any")}
               </option>
-            ))}
-          </select>
+              {options.conditions.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {name(c)}
+                </option>
+              ))}
+            </select>
+          )}
           <button
             type="button"
             aria-expanded={showMore}
@@ -230,18 +238,23 @@ export function ClientFilters({
               onChange={(e) => go({ sort: e.target.value as ClientListParams["sort"] })}
               className={selectCls}
             >
-              {CLIENT_SORTS.map((s) => (
-                <option key={s} value={s}>
-                  {tf(`sorts.${s}`)}
-                </option>
-              ))}
+              {CLIENT_SORTS.filter((s) => options.seesInsurance || !s.startsWith("effective")).map(
+                (s) => (
+                  <option key={s} value={s}>
+                    {tf(`sorts.${s}`)}
+                  </option>
+                ),
+              )}
             </select>
           </label>
         </div>
 
         {showMore && (
           <div className="grid [grid-template-columns:repeat(auto-fit,minmax(180px,1fr))] gap-3">
-            {(["createdFrom", "createdTo", "effectiveFrom", "effectiveTo"] as const).map((key) => (
+            {(options.seesInsurance
+              ? (["createdFrom", "createdTo", "effectiveFrom", "effectiveTo"] as const)
+              : (["createdFrom", "createdTo"] as const)
+            ).map((key) => (
               <label key={key} className="flex flex-col gap-1 text-xs font-semibold text-[#4a5366]">
                 {tf(key)}
                 <input

@@ -5,7 +5,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 
 const SECTIONS = [
   { key: "users", href: "/settings/users", available: true },
-  { key: "carriers", href: "/settings/carriers", available: false },
+  { key: "carriers", href: "/settings/carriers", available: true },
   { key: "conditions", href: "/settings/conditions", available: false },
   { key: "consents", href: "/settings/consents", available: false },
 ] as const;

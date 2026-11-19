@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { maskLast4 } from "@/lib/crypto/sensitive-field";
+import { revealInsuranceNumberAction } from "@/modules/insurance/actions";
 import { revealBeneficiaryNumberAction } from "../actions";
 import { formatBeneficiaryNumber } from "../identifiers";
 
@@ -14,12 +15,16 @@ const AUTO_HIDE_MS = 30_000;
  * Muestra "•••• 1234". Con permiso, "Revelar" pide el valor al servidor (queda en auditoría)
  * y lo oculta otra vez a los 30 s. El valor nunca se guarda en el navegador.
  */
+export type RevealTarget =
+  | { kind: "beneficiary"; enrollmentId: string }
+  | { kind: "insurance"; insuranceId: string; field: "member" | "confirmation" };
+
 export function RevealNumber({
-  enrollmentId,
+  target,
   last4,
   canReveal,
 }: {
-  enrollmentId: string;
+  target: RevealTarget;
   last4: string;
   canReveal: boolean;
 }) {
@@ -35,9 +40,16 @@ export function RevealNumber({
 
   function reveal() {
     startTransition(async () => {
-      const result = await revealBeneficiaryNumberAction(enrollmentId);
-      if (result.ok) setValue(formatBeneficiaryNumber(result.data.programCode, result.data.value));
-      else toast.error(t(`errors.${result.error}`));
+      if (target.kind === "beneficiary") {
+        const result = await revealBeneficiaryNumberAction(target.enrollmentId);
+        if (result.ok)
+          setValue(formatBeneficiaryNumber(result.data.programCode, result.data.value));
+        else toast.error(t(`errors.${result.error}`));
+      } else {
+        const result = await revealInsuranceNumberAction(target.insuranceId, target.field);
+        if (result.ok) setValue(result.data.value);
+        else toast.error(t(`errors.${result.error}`));
+      }
     });
   }
 
