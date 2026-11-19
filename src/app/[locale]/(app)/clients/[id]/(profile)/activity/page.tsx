@@ -21,7 +21,10 @@ const ENUM_NAMESPACES: Record<string, Record<string, string>> = {
   enrollment: { program: "Clients.programs" },
   doctor: { role: "Doctors.roles" },
   medication: { form: "Medications.forms" },
+  reminder: { priority: "Reminders.priorities", status: "Reminders.statuses" },
 };
+/** Fecha y hora completa en ISO (p. ej. vencimiento de un recordatorio). */
+const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 
 /** Pestaña "Actividad": historial de cambios (solo lectura), filtrado por permisos. */
 export default async function ClientActivityPage({
@@ -62,6 +65,8 @@ export default async function ClientActivityPage({
     const ns = ENUM_NAMESPACES[entityType]?.[field];
     if (ns && typeof value === "string" && tAll.has(`${ns}.${value}`))
       return tAll(`${ns}.${value}` as "Clients.status.NEW");
+    if (typeof value === "string" && ISO_DATE_TIME.test(value))
+      return dateTime.format(new Date(value));
     if (typeof value === "string" && parseDateOnly(value))
       return formatDateOnly(parseDateOnly(value), locale);
     if (

@@ -193,9 +193,14 @@ export default async function DashboardPage() {
               ))}
             </ul>
           )}
-          <p className="text-muted border-t border-[#edf0f4] px-5 py-2.5 text-xs">
-            {t("remindersSoon")}
-          </p>
+          {hasPermission(user, PERMISSIONS.REMINDER_MANAGE) && (
+            <Link
+              href="/reminders"
+              className="text-primary block border-t border-[#edf0f4] px-5 py-2.5 text-[13px] font-semibold hover:underline"
+            >
+              {t("allReminders")}
+            </Link>
+          )}
         </Panel>
       </div>
 

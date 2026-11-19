@@ -25,7 +25,8 @@
     "settings": "Configuración",
     "account": "Mi cuenta",
     "soon": "Pronto",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "overdueBadge": "{count, plural, one {# recordatorio vencido} other {# recordatorios vencidos}}"
   },
   "Errors": {
     "invalidCredentials": "Correo o contraseña incorrectos.",
@@ -119,7 +120,6 @@
       "URGENT": "Urgente"
     },
     "assignedTo": "Asignado a {name}",
-    "remindersSoon": "La gestión completa de recordatorios llega en la Etapa 10.",
     "effective": "Próximas fechas efectivas",
     "noEffective": "Sin fechas efectivas próximas.",
     "pending": "Solicitudes pendientes",
@@ -131,7 +131,8 @@
     "activity": "Actividad reciente",
     "noActivity": "Sin actividad reciente.",
     "activityLine": "{actor} {action} {entity} de",
-    "seeAll": "Ver todos"
+    "seeAll": "Ver todos",
+    "allReminders": "Ver todos los recordatorios"
   },
   "Account": {
     "title": "Mi cuenta",
@@ -847,7 +848,100 @@
       "formOther": "Presentación (otra)",
       "prescriber": "Prescribe",
       "body": "Texto",
-      "isImportant": "Importante"
+      "isImportant": "Importante",
+      "description": "Descripción",
+      "dueAt": "Fecha y hora",
+      "priority": "Prioridad",
+      "assignedTo": "Responsable"
+    }
+  },
+  "Reminders": {
+    "title": "Recordatorios",
+    "subtitle": "Seguimientos pendientes de tus clientes. Las horas están en hora de Florida.",
+    "clientTitle": "Recordatorios",
+    "add": "Nuevo recordatorio",
+    "views": {
+      "pending": "Pendientes",
+      "overdue": "Vencidos",
+      "done": "Completados",
+      "cancelled": "Cancelados"
+    },
+    "scope": {
+      "label": "Mostrar",
+      "mine": "Asignados a mí",
+      "all": "De todos mis clientes"
+    },
+    "empty": {
+      "pending": "No hay recordatorios pendientes.",
+      "overdue": "No hay recordatorios vencidos.",
+      "done": "No hay recordatorios completados.",
+      "cancelled": "No hay recordatorios cancelados."
+    },
+    "overdue": "Vencido",
+    "today": "Hoy",
+    "tomorrow": "Mañana",
+    "priorities": {
+      "NORMAL": "Normal",
+      "HIGH": "Alta",
+      "URGENT": "Urgente"
+    },
+    "statuses": {
+      "PENDING": "Pendiente",
+      "DONE": "Completado",
+      "CANCELLED": "Cancelado"
+    },
+    "assignedTo": "Para: {name}",
+    "completedAt": "Completado {date}",
+    "cancelledAt": "Cancelado {date}",
+    "complete": "Completar",
+    "edit": "Editar o posponer",
+    "cancel": "Cancelar recordatorio",
+    "call": "Llamar a {name}",
+    "fields": {
+      "client": "Cliente",
+      "clientSearch": "Buscar cliente por nombre",
+      "noClients": "No se encontraron clientes.",
+      "changeClient": "Cambiar",
+      "description": "¿Qué hay que hacer?",
+      "descriptionPlaceholder": "Ej.: Llamar para confirmar su PCP",
+      "dueAt": "Fecha y hora (hora de Florida)",
+      "priority": "Prioridad",
+      "assignedTo": "Responsable",
+      "me": "Yo ({name})"
+    },
+    "dialog": {
+      "addTitle": "Nuevo recordatorio",
+      "editTitle": "Editar o posponer recordatorio",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "close": "Cerrar"
+    },
+    "cancelDialog": {
+      "title": "¿Cancelar este recordatorio?",
+      "body": "Dejará de aparecer como pendiente. Queda en el historial del cliente.",
+      "confirm": "Cancelar recordatorio",
+      "keep": "Mantener",
+      "cancelling": "Cancelando…"
+    },
+    "toast": {
+      "created": "Recordatorio creado.",
+      "updated": "Recordatorio actualizado.",
+      "done": "Recordatorio completado.",
+      "cancelled": "Recordatorio cancelado."
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "El texto es demasiado largo.",
+      "invalidDateTime": "Ingresa una fecha y hora válidas.",
+      "outOfRange": "La fecha debe estar entre hace un año y dentro de dos años.",
+      "invalidOption": "Esa persona no tiene acceso a este cliente."
+    },
+    "errors": {
+      "forbidden": "No tienes permiso para gestionar recordatorios.",
+      "notFound": "El recordatorio o el cliente no existe o no tienes acceso.",
+      "conflict": "Conflicto al guardar.",
+      "invalid": "Revisa los campos marcados (los recordatorios completados o cancelados no se pueden modificar).",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
     }
   }
 }

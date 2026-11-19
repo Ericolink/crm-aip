@@ -17,6 +17,8 @@ export type NavItem = {
   href: string;
   /** false = módulo de una etapa futura: se muestra deshabilitado con la etiqueta "Pronto". */
   available: boolean;
+  /** Número a destacar junto al enlace (p. ej. recordatorios vencidos). */
+  badge?: number;
 };
 
 const ICONS: Record<NavItem["key"], LucideIcon> = {
@@ -62,6 +64,12 @@ export function SidebarNav({ main, secondary }: { main: NavItem[]; secondary: Na
       >
         <Icon aria-hidden className="size-[18px]" />
         {t(item.key)}
+        {item.badge ? (
+          <span className="bg-danger ml-auto rounded-full px-2 py-0.5 text-[11px] font-semibold text-white">
+            <span className="sr-only">{t("overdueBadge", { count: item.badge })}</span>
+            <span aria-hidden>{item.badge}</span>
+          </span>
+        ) : null}
       </Link>
     );
   }

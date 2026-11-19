@@ -1,11 +1,14 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { Card, DetailItem } from "@/components/ui/card";
-import { requireUser } from "@/lib/auth/session";
+import { hasPermission, requireUser } from "@/lib/auth/session";
+import { PERMISSIONS } from "@/lib/permissions/catalog";
 import { ageFrom, formatDateOnly, formatPhone } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { getClientDetailForRequest } from "@/modules/clients/queries";
 import { latestImportantNote } from "@/modules/notes/service";
+import { NewReminderButton, ReminderList } from "@/modules/reminders/components/reminders";
+import { listReminders } from "@/modules/reminders/service";
 
 /** Pestaña "Resumen": datos personales y, según el rol, cobertura actual, PCP y condiciones. */
 export default async function ClientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,6 +22,11 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
   const tp = await getTranslations("Profile");
   const tn = await getTranslations("Notes");
   const importantNote = await latestImportantNote(user, client.id);
+  const tr = await getTranslations("Reminders");
+  const reminders = hasPermission(user, PERMISSIONS.REMINDER_MANAGE)
+    ? await listReminders(user, { view: "pending", clientId: client.id, limit: 5 })
+    : null;
+  const me = { id: user.id, name: user.name };
   const noteDate = (d: Date) =>
     new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-US", {
       timeZone: "America/New_York",
@@ -71,6 +79,33 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
       </div>
 
       <div className="flex min-w-0 flex-[2_1_320px] flex-col gap-5">
+        {reminders && (
+          <section className="border-border bg-surface rounded-xl border">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#edf0f4] px-5 py-3">
+              <h2 className="text-[15px] font-semibold">
+                {tr("clientTitle")}
+                {reminders.counts.pending > 0 && (
+                  <span className="text-muted ml-1.5 text-sm font-normal">
+                    ({reminders.counts.pending})
+                  </span>
+                )}
+              </h2>
+              <NewReminderButton
+                clientId={client.id}
+                currentUser={me}
+                now={reminders.now}
+                size="sm"
+              />
+            </div>
+            <ReminderList
+              reminders={reminders.reminders}
+              showClient={false}
+              currentUser={me}
+              now={reminders.now}
+              emptyText={tr("empty.pending")}
+            />
+          </section>
+        )}
         <Card
           title={tn("latestImportant")}
           action={

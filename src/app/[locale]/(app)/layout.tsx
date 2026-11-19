@@ -8,6 +8,7 @@ import { SignOutButton } from "@/components/app-shell/sign-out-button";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { hasPermission, requireUser } from "@/lib/auth/session";
 import { PERMISSIONS } from "@/lib/permissions/catalog";
+import { overdueCountForUser } from "@/modules/reminders/service";
 
 /**
  * Estructura de la aplicación autenticada.
@@ -25,12 +26,16 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 async function AuthenticatedShell({ children }: { children: ReactNode }) {
   const user = await requireUser();
   const locale = (await getLocale()) as "es" | "en";
+  const canReminders = hasPermission(user, PERMISSIONS.REMINDER_MANAGE);
+  const overdue = canReminders ? await overdueCountForUser(user) : 0;
 
   // Solo se muestran las secciones que el rol permite.
   const main: NavItem[] = [
     { key: "dashboard", href: "/dashboard", available: true },
     { key: "clients", href: "/clients", available: true },
-    { key: "reminders", href: "/reminders", available: false },
+    ...(canReminders
+      ? [{ key: "reminders", href: "/reminders", available: true, badge: overdue } as const]
+      : []),
     ...(hasPermission(user, PERMISSIONS.DATA_IMPORT) || hasPermission(user, PERMISSIONS.DATA_EXPORT)
       ? [{ key: "importExport", href: "/import-export", available: false } as const]
       : []),

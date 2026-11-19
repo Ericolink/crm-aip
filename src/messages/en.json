@@ -25,7 +25,8 @@
     "settings": "Settings",
     "account": "My account",
     "soon": "Soon",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "overdueBadge": "{count, plural, one {# overdue reminder} other {# overdue reminders}}"
   },
   "Errors": {
     "invalidCredentials": "Incorrect email or password.",
@@ -119,7 +120,6 @@
       "URGENT": "Urgent"
     },
     "assignedTo": "Assigned to {name}",
-    "remindersSoon": "Full reminder management arrives in Stage 10.",
     "effective": "Upcoming effective dates",
     "noEffective": "No upcoming effective dates.",
     "pending": "Pending applications",
@@ -131,7 +131,8 @@
     "activity": "Recent activity",
     "noActivity": "No recent activity.",
     "activityLine": "{actor} {action} {entity} for",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "allReminders": "View all reminders"
   },
   "Account": {
     "title": "My account",
@@ -847,7 +848,100 @@
       "formOther": "Form (other)",
       "prescriber": "Prescribed by",
       "body": "Text",
-      "isImportant": "Important"
+      "isImportant": "Important",
+      "description": "Description",
+      "dueAt": "Date and time",
+      "priority": "Priority",
+      "assignedTo": "Assigned to"
+    }
+  },
+  "Reminders": {
+    "title": "Reminders",
+    "subtitle": "Pending follow-ups for your clients. Times are in Florida time.",
+    "clientTitle": "Reminders",
+    "add": "New reminder",
+    "views": {
+      "pending": "Pending",
+      "overdue": "Overdue",
+      "done": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "scope": {
+      "label": "Show",
+      "mine": "Assigned to me",
+      "all": "All my clients"
+    },
+    "empty": {
+      "pending": "No pending reminders.",
+      "overdue": "No overdue reminders.",
+      "done": "No completed reminders.",
+      "cancelled": "No cancelled reminders."
+    },
+    "overdue": "Overdue",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "priorities": {
+      "NORMAL": "Normal",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "statuses": {
+      "PENDING": "Pending",
+      "DONE": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "assignedTo": "For: {name}",
+    "completedAt": "Completed {date}",
+    "cancelledAt": "Cancelled {date}",
+    "complete": "Complete",
+    "edit": "Edit or snooze",
+    "cancel": "Cancel reminder",
+    "call": "Call {name}",
+    "fields": {
+      "client": "Client",
+      "clientSearch": "Search client by name",
+      "noClients": "No clients found.",
+      "changeClient": "Change",
+      "description": "What needs to be done?",
+      "descriptionPlaceholder": "e.g. Call to confirm the PCP",
+      "dueAt": "Date and time (Florida time)",
+      "priority": "Priority",
+      "assignedTo": "Assigned to",
+      "me": "Me ({name})"
+    },
+    "dialog": {
+      "addTitle": "New reminder",
+      "editTitle": "Edit or snooze reminder",
+      "save": "Save",
+      "saving": "Saving…",
+      "close": "Close"
+    },
+    "cancelDialog": {
+      "title": "Cancel this reminder?",
+      "body": "It will no longer show as pending. It stays in the client history.",
+      "confirm": "Cancel reminder",
+      "keep": "Keep",
+      "cancelling": "Cancelling…"
+    },
+    "toast": {
+      "created": "Reminder created.",
+      "updated": "Reminder updated.",
+      "done": "Reminder completed.",
+      "cancelled": "Reminder cancelled."
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "The text is too long.",
+      "invalidDateTime": "Enter a valid date and time.",
+      "outOfRange": "The date must be between one year ago and two years from now.",
+      "invalidOption": "That person does not have access to this client."
+    },
+    "errors": {
+      "forbidden": "You do not have permission to manage reminders.",
+      "notFound": "The reminder or client does not exist or you do not have access.",
+      "conflict": "Conflict while saving.",
+      "invalid": "Check the highlighted fields (completed or cancelled reminders cannot be changed).",
+      "generic": "The action could not be completed. Please try again."
     }
   }
 }

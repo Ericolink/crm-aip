@@ -1,6 +1,6 @@
 # ADR 0014 — Panel principal (Dashboard)
 
-- **Estado:** propuesta para revisión (2026-11-19)
+- **Estado:** aprobada (2026-11-19)
 
 ## Contenido
 
@@ -21,7 +21,7 @@
 - Se calcula **en cada visita** (sin caché): los indicadores reflejan cualquier alta o cambio inmediatamente.
 - "Hoy" y "mañana" según la hora de Florida. La hora del cálculo la entrega el servicio (el render no lee el reloj).
 - No se agregó Recharts: las barras simples se resuelven con HTML/CSS. Se evaluará para los reportes (etapa futura).
-- La gestión de recordatorios (crear, completar, cancelar) llega en la **Etapa 10**; el panel ya los lista.
+- La gestión de recordatorios está en la Etapa 10 (ADR 0015); el panel enlaza a "Ver todos los recordatorios".
 
 ## Pruebas
 
