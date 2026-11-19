@@ -94,7 +94,44 @@
   },
   "Dashboard": {
     "greeting": "Hola, {name}",
-    "stageNote": "El panel con indicadores llegará en la Etapa 9. Mientras tanto, ve a Clientes."
+    "today": "{date}",
+    "newClient": "Nuevo cliente",
+    "kpis": {
+      "total": "Total de prospectos",
+      "NEW": "Nuevos",
+      "PENDING": "Pendientes",
+      "ACTIVE": "Activos",
+      "URGENT": "Urgentes",
+      "newThisWeek": "{count, plural, =0 {Sin altas esta semana} one {+# esta semana} other {+# esta semana}}",
+      "overdue": "{count, plural, =0 {Sin seguimientos vencidos} one {# seguimiento vencido} other {# seguimientos vencidos}}",
+      "viewList": "Ver {label}"
+    },
+    "byProgram": "Clientes por programa",
+    "byProgramNote": "Un cliente puede contar en más de un programa (p. ej. Medicare + Medicaid).",
+    "followUps": "Próximos seguimientos",
+    "noFollowUps": "No hay seguimientos pendientes.",
+    "overdue": "Vencido",
+    "today_": "Hoy",
+    "tomorrow": "Mañana",
+    "priority": {
+      "NORMAL": "Normal",
+      "HIGH": "Alta",
+      "URGENT": "Urgente"
+    },
+    "assignedTo": "Asignado a {name}",
+    "remindersSoon": "La gestión completa de recordatorios llega en la Etapa 10.",
+    "effective": "Próximas fechas efectivas",
+    "noEffective": "Sin fechas efectivas próximas.",
+    "pending": "Solicitudes pendientes",
+    "noPending": "Sin solicitudes pendientes.",
+    "waiting": "{days, plural, =0 {Enviada hoy} one {# día esperando} other {# días esperando}}",
+    "submittedUnknown": "Sin fecha de envío",
+    "recent": "Agregados recientemente",
+    "noRecent": "Todavía no hay clientes.",
+    "activity": "Actividad reciente",
+    "noActivity": "Sin actividad reciente.",
+    "activityLine": "{actor} {action} {entity} de",
+    "seeAll": "Ver todos"
   },
   "Account": {
     "title": "Mi cuenta",

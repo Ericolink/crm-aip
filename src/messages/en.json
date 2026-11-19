@@ -94,7 +94,44 @@
   },
   "Dashboard": {
     "greeting": "Hello, {name}",
-    "stageNote": "The dashboard with metrics arrives in Stage 9. Meanwhile, go to Clients."
+    "today": "{date}",
+    "newClient": "New client",
+    "kpis": {
+      "total": "Total prospects",
+      "NEW": "New",
+      "PENDING": "Pending",
+      "ACTIVE": "Active",
+      "URGENT": "Urgent",
+      "newThisWeek": "{count, plural, =0 {No new this week} one {+# this week} other {+# this week}}",
+      "overdue": "{count, plural, =0 {No overdue follow-ups} one {# overdue follow-up} other {# overdue follow-ups}}",
+      "viewList": "View {label}"
+    },
+    "byProgram": "Clients by program",
+    "byProgramNote": "A client can count in more than one program (e.g. Medicare + Medicaid).",
+    "followUps": "Upcoming follow-ups",
+    "noFollowUps": "No pending follow-ups.",
+    "overdue": "Overdue",
+    "today_": "Today",
+    "tomorrow": "Tomorrow",
+    "priority": {
+      "NORMAL": "Normal",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "assignedTo": "Assigned to {name}",
+    "remindersSoon": "Full reminder management arrives in Stage 10.",
+    "effective": "Upcoming effective dates",
+    "noEffective": "No upcoming effective dates.",
+    "pending": "Pending applications",
+    "noPending": "No pending applications.",
+    "waiting": "{days, plural, =0 {Sent today} one {# day waiting} other {# days waiting}}",
+    "submittedUnknown": "No submission date",
+    "recent": "Recently added",
+    "noRecent": "No clients yet.",
+    "activity": "Recent activity",
+    "noActivity": "No recent activity.",
+    "activityLine": "{actor} {action} {entity} for",
+    "seeAll": "See all"
   },
   "Account": {
     "title": "My account",
