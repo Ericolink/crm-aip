@@ -5,6 +5,7 @@ import { requireUser } from "@/lib/auth/session";
 import { ageFrom, formatDateOnly, formatPhone } from "@/lib/format";
 import { Link } from "@/i18n/navigation";
 import { getClientDetailForRequest } from "@/modules/clients/queries";
+import { latestImportantNote } from "@/modules/notes/service";
 
 /** Pestaña "Resumen": datos personales y, según el rol, cobertura actual, PCP y condiciones. */
 export default async function ClientOverviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,6 +17,14 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
   const t = await getTranslations("Clients");
   const ti = await getTranslations("Insurance");
   const tp = await getTranslations("Profile");
+  const tn = await getTranslations("Notes");
+  const importantNote = await latestImportantNote(user, client.id);
+  const noteDate = (d: Date) =>
+    new Intl.DateTimeFormat(locale === "en" ? "en-US" : "es-US", {
+      timeZone: "America/New_York",
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(d);
   const locale = (await getLocale()) as "es" | "en";
   const age = ageFrom(client.dateOfBirth);
   const dash = t("detail.notProvided");
@@ -62,6 +71,28 @@ export default async function ClientOverviewPage({ params }: { params: Promise<{
       </div>
 
       <div className="flex min-w-0 flex-[2_1_320px] flex-col gap-5">
+        <Card
+          title={tn("latestImportant")}
+          action={
+            <Link
+              href={`/clients/${client.id}/notes`}
+              className="text-primary text-[13px] font-medium hover:underline"
+            >
+              {tn("seeAll")}
+            </Link>
+          }
+        >
+          {importantNote ? (
+            <div className="rounded-lg border border-[#f3d9a4] bg-[#fffaf0] p-3 text-sm">
+              <p className="text-muted mb-1 text-xs">
+                {importantNote.author.name} · {noteDate(importantNote.createdAt)}
+              </p>
+              <p className="line-clamp-4 break-words whitespace-pre-wrap">{importantNote.body}</p>
+            </div>
+          ) : (
+            <p className="text-muted text-sm">{tn("noImportant")}</p>
+          )}
+        </Card>
         {client.access.insurance && (
           <Card
             title={t("detail.coverage")}
