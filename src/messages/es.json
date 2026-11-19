@@ -601,5 +601,81 @@
       "invalid": "Revisa los campos marcados.",
       "generic": "No se pudo completar la acción. Inténtalo de nuevo."
     }
+  },
+  "Medications": {
+    "title": "Medicamentos",
+    "empty": "Sin medicamentos registrados.",
+    "emptyHelp": "Agrega el primer medicamento de este cliente.",
+    "add": "Agregar medicamento",
+    "edit": "Editar",
+    "remove": "Quitar",
+    "actions": "Acciones",
+    "columns": {
+      "name": "Medicamento",
+      "dose": "Dosis",
+      "frequency": "Frecuencia",
+      "form": "Presentación",
+      "prescriber": "Prescribe",
+      "notes": "Notas"
+    },
+    "forms": {
+      "TABLET": "Tableta",
+      "CAPSULE": "Cápsula",
+      "LIQUID": "Líquido",
+      "INJECTION": "Inyección",
+      "INHALER": "Inhalador",
+      "TOPICAL": "Tópico (crema/gel)",
+      "PATCH": "Parche",
+      "DROPS": "Gotas",
+      "OTHER": "Otra"
+    },
+    "removedPrescriber": "{name} (ya no está en la lista de médicos)",
+    "fields": {
+      "name": "Nombre del medicamento",
+      "namePlaceholder": "Escribe para ver sugerencias",
+      "dose": "Dosis",
+      "dosePlaceholder": "Ej. 500 mg",
+      "frequency": "Frecuencia",
+      "frequencyPlaceholder": "Ej. 2 veces al día",
+      "form": "Presentación",
+      "formOther": "Describe la presentación",
+      "prescriber": "Médico que lo prescribe (opcional)",
+      "noPrescriber": "Sin especificar",
+      "notes": "Notas",
+      "choose": "Selecciona…"
+    },
+    "noDoctorsHint": "Para indicar quién lo prescribe, primero agrega al médico en la pestaña Médicos.",
+    "dialog": {
+      "addTitle": "Agregar medicamento",
+      "editTitle": "Editar medicamento",
+      "save": "Guardar",
+      "saving": "Guardando…",
+      "cancel": "Cancelar"
+    },
+    "removeDialog": {
+      "title": "¿Quitar {name}?",
+      "body": "Dejará de aparecer en la lista del cliente. El cambio queda en el historial.",
+      "confirm": "Quitar medicamento",
+      "removing": "Quitando…"
+    },
+    "toast": {
+      "added": "Medicamento agregado.",
+      "updated": "Medicamento actualizado.",
+      "removed": "Medicamento quitado."
+    },
+    "validation": {
+      "required": "Este campo es obligatorio.",
+      "tooLong": "El texto es demasiado largo.",
+      "invalidName": "Usa solo letras, números y signos comunes.",
+      "invalidOption": "La opción seleccionada no es válida.",
+      "duplicate": "Ese valor ya existe."
+    },
+    "errors": {
+      "forbidden": "No tienes permiso para esta acción.",
+      "notFound": "El medicamento o el cliente no existe o no tienes acceso.",
+      "conflict": "Ese valor ya existe.",
+      "invalid": "Revisa los campos marcados.",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+    }
   }
 }

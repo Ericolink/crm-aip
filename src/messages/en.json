@@ -601,5 +601,81 @@
       "invalid": "Check the highlighted fields.",
       "generic": "The action could not be completed. Please try again."
     }
+  },
+  "Medications": {
+    "title": "Medications",
+    "empty": "No medications recorded.",
+    "emptyHelp": "Add this client’s first medication.",
+    "add": "Add medication",
+    "edit": "Edit",
+    "remove": "Remove",
+    "actions": "Actions",
+    "columns": {
+      "name": "Medication",
+      "dose": "Dose",
+      "frequency": "Frequency",
+      "form": "Form",
+      "prescriber": "Prescribed by",
+      "notes": "Notes"
+    },
+    "forms": {
+      "TABLET": "Tablet",
+      "CAPSULE": "Capsule",
+      "LIQUID": "Liquid",
+      "INJECTION": "Injection",
+      "INHALER": "Inhaler",
+      "TOPICAL": "Topical (cream/gel)",
+      "PATCH": "Patch",
+      "DROPS": "Drops",
+      "OTHER": "Other"
+    },
+    "removedPrescriber": "{name} (no longer on the doctor list)",
+    "fields": {
+      "name": "Medication name",
+      "namePlaceholder": "Type to see suggestions",
+      "dose": "Dose",
+      "dosePlaceholder": "e.g. 500 mg",
+      "frequency": "Frequency",
+      "frequencyPlaceholder": "e.g. twice daily",
+      "form": "Form",
+      "formOther": "Describe the form",
+      "prescriber": "Prescribing doctor (optional)",
+      "noPrescriber": "Not specified",
+      "notes": "Notes",
+      "choose": "Select…"
+    },
+    "noDoctorsHint": "To record who prescribes it, first add the doctor in the Doctors tab.",
+    "dialog": {
+      "addTitle": "Add medication",
+      "editTitle": "Edit medication",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel"
+    },
+    "removeDialog": {
+      "title": "Remove {name}?",
+      "body": "It will no longer appear on the client’s list. The change is kept in the history.",
+      "confirm": "Remove medication",
+      "removing": "Removing…"
+    },
+    "toast": {
+      "added": "Medication added.",
+      "updated": "Medication updated.",
+      "removed": "Medication removed."
+    },
+    "validation": {
+      "required": "This field is required.",
+      "tooLong": "The text is too long.",
+      "invalidName": "Use only letters, numbers and common symbols.",
+      "invalidOption": "The selected option is not valid.",
+      "duplicate": "That value already exists."
+    },
+    "errors": {
+      "forbidden": "You do not have permission for this action.",
+      "notFound": "The medication or client does not exist or you do not have access.",
+      "conflict": "That value already exists.",
+      "invalid": "Check the highlighted fields.",
+      "generic": "The action could not be completed. Please try again."
+    }
   }
 }
