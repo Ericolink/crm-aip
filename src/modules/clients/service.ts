@@ -88,6 +88,34 @@ export type ClientListResult = {
 };
 
 /**
+ * Si la búsqueda parece un identificador y el usuario puede buscarlos, devuelve los
+ * índices ciegos para buscarlo y lo registra en auditoría SIN el valor buscado.
+ * Lo usan la lista y la exportación (mismos filtros).
+ */
+export async function resolveIdentifierSearch(
+  user: CurrentUser,
+  q: string | undefined,
+): Promise<IdentifierIndexes | null> {
+  const candidate = q ? identifierCandidate(q) : null;
+  if (!candidate || !canSearchIdentifiers(user)) return null;
+  const protector = getFieldProtector();
+  const indexes = {
+    beneficiary: protector.blindIndex(SENSITIVE_FIELDS.BENEFICIARY_NUMBER, candidate),
+    member: protector.blindIndex(SENSITIVE_FIELDS.MEMBER_NUMBER, candidate),
+    confirmation: protector.blindIndex(SENSITIVE_FIELDS.CONFIRMATION_NUMBER, candidate),
+  };
+  await recordAudit({
+    action: "IDENTIFIER_SEARCH",
+    outcome: "SUCCESS",
+    actorId: user.id,
+    metadata: { length: candidate.length },
+    dedupeWindowSeconds: 10,
+    dedupeDiscriminator: indexes.member,
+  });
+  return indexes;
+}
+
+/**
  * Lista con búsqueda, filtros combinados, orden y paginación.
  * La búsqueda por identificadores sensibles solo se activa para quien puede revelarlos,
  * y se registra en auditoría SIN el valor buscado.
@@ -102,25 +130,7 @@ export async function listClients(
     ...options,
   };
 
-  let identifierIndexes: IdentifierIndexes | null = null;
-  const candidate = params.q ? identifierCandidate(params.q) : null;
-  if (candidate && canSearchIdentifiers(user)) {
-    const protector = getFieldProtector();
-    identifierIndexes = {
-      beneficiary: protector.blindIndex(SENSITIVE_FIELDS.BENEFICIARY_NUMBER, candidate),
-      member: protector.blindIndex(SENSITIVE_FIELDS.MEMBER_NUMBER, candidate),
-      confirmation: protector.blindIndex(SENSITIVE_FIELDS.CONFIRMATION_NUMBER, candidate),
-    };
-    await recordAudit({
-      action: "IDENTIFIER_SEARCH",
-      outcome: "SUCCESS",
-      actorId: user.id,
-      metadata: { length: candidate.length },
-      dedupeWindowSeconds: 10,
-      dedupeDiscriminator: identifierIndexes.member,
-    });
-  }
-
+  const identifierIndexes = await resolveIdentifierSearch(user, params.q);
   const where = buildClientWhere(user, params, { identifierIndexes });
   const countWhere = buildClientWhere(user, params, { identifierIndexes, ignoreStatus: true });
 

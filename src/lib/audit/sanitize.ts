@@ -25,6 +25,8 @@ export const AUDIT_ACTIONS = [
   "CARRIER_UPDATED",
   "CARRIER_PROGRAM_CHANGED",
   "PREFERENCE_UPDATED",
+  "DATA_IMPORTED",
+  "DATA_EXPORTED",
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];

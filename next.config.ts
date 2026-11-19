@@ -21,6 +21,10 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   cacheComponents: true,
   partialPrefetching: true,
+  experimental: {
+    // Importación: archivos de hasta 2 MB (+ margen del formulario multipart).
+    serverActions: { bodySizeLimit: "3mb" },
+  },
   turbopack: {
     rules: {
       "*.css": {

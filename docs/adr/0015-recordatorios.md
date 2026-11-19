@@ -1,6 +1,6 @@
 # ADR 0015 — Recordatorios y seguimientos
 
-- **Estado:** propuesta para revisión (2026-11-19)
+- **Estado:** aprobada (2026-11-19)
 
 ## Funcionalidad
 

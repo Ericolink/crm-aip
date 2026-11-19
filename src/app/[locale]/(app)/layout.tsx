@@ -37,7 +37,7 @@ async function AuthenticatedShell({ children }: { children: ReactNode }) {
       ? [{ key: "reminders", href: "/reminders", available: true, badge: overdue } as const]
       : []),
     ...(hasPermission(user, PERMISSIONS.DATA_IMPORT) || hasPermission(user, PERMISSIONS.DATA_EXPORT)
-      ? [{ key: "importExport", href: "/import-export", available: false } as const]
+      ? [{ key: "importExport", href: "/import-export", available: true } as const]
       : []),
   ];
   const secondary: NavItem[] = [

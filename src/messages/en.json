@@ -943,5 +943,103 @@
       "invalid": "Check the highlighted fields (completed or cancelled reminders cannot be changed).",
       "generic": "The action could not be completed. Please try again."
     }
+  },
+  "DataTransfer": {
+    "title": "Import / Export",
+    "subtitle": "Load clients from a file or download your list as Excel or CSV.",
+    "export": {
+      "title": "Export clients",
+      "body": "Download the clients you can see, with their contact details and, if you have access, their current coverage.",
+      "bodyFiltered": "The {count, plural, one {# client} other {# clients}} in the list with the current filters will be exported.",
+      "fromList": "To export only part of the list, filter the client list and use its Export button.",
+      "button": "Export",
+      "format": "Format",
+      "excel": "Excel (.xlsx)",
+      "csv": "CSV (.csv)",
+      "masked": "Medicare, Medicaid and member numbers are exported masked (•••• 1234).",
+      "sensitive": "Include full identifiers (Medicare, Medicaid, member number)",
+      "sensitiveWarning": "The file will contain protected health information. Store it only on protected devices, do not email it unencrypted and delete it when no longer needed. The export is logged.",
+      "sensitiveConfirm": "I understand and want to include them",
+      "download": "Download",
+      "downloading": "Preparing…",
+      "done": "File downloaded ({count, plural, one {# client} other {# clients}}).",
+      "dialogTitle": "Export clients",
+      "close": "Close"
+    },
+    "import": {
+      "title": "Import clients",
+      "body": "Upload a CSV or Excel file with one row per client. Personal and contact details are imported; coverage, doctors and medications are added later in each profile.",
+      "rules": "Up to 2 MB and 2,000 rows. First name and Last name columns are required. Headers may be in English or Spanish.",
+      "template": "Download template",
+      "file": "File (.csv or .xlsx)",
+      "analyze": "Check file",
+      "analyzing": "Checking…",
+      "previewTitle": "Check results",
+      "nothingSaved": "Nothing has been saved yet.",
+      "total": "Rows in file",
+      "valid": "Ready to import",
+      "invalid": "With errors (not imported)",
+      "duplicates": "Possible duplicates (skipped)",
+      "columns": "Recognized columns",
+      "ignored": "Ignored columns",
+      "issues": "Row details",
+      "row": "Row",
+      "column": "Column",
+      "problem": "Problem",
+      "truncated": "Showing the first 200 problems.",
+      "confirm": "Import {count, plural, one {# client} other {# clients}}",
+      "importing": "Importing…",
+      "cancel": "Choose another file",
+      "noneValid": "There are no valid rows to import. Fix the file and try again.",
+      "resultTitle": "Import finished",
+      "result": "{imported, plural, one {# client was} other {# clients were}} imported. {skipped, plural, =0 {} one {# row was not imported.} other {# rows were not imported.}}",
+      "viewClients": "View clients",
+      "another": "Import another file",
+      "selectFile": "Choose a file first."
+    },
+    "issueCodes": {
+      "required": "Required",
+      "tooLong": "Text too long",
+      "invalidDate": "Invalid date (use MM/DD/YYYY)",
+      "invalidPhone": "Invalid phone (10 digits)",
+      "invalidEmail": "Invalid email",
+      "invalidState": "Invalid state (2 letters, e.g. FL)",
+      "invalidZip": "Invalid ZIP code",
+      "invalidOption": "Unrecognized value",
+      "unknownAgent": "No active agent with that email",
+      "cannotAssign": "You do not have permission to assign agents",
+      "duplicate": "A client with the same name and date of birth (or phone) already exists",
+      "duplicateInFile": "Repeated in the file",
+      "saveFailed": "Could not be saved"
+    },
+    "fileErrors": {
+      "unsupported": "Unsupported format. Use a .csv or .xlsx file.",
+      "tooLarge": "The file is too large (2 MB max).",
+      "empty": "The file is empty.",
+      "unreadable": "The file could not be read. Make sure it is not damaged.",
+      "tooManyRows": "The file has more than 2,000 rows. Split it into several files.",
+      "tooManyColumns": "The file has too many columns.",
+      "missingColumns": "The First name and Last name (Nombre / Apellido) columns are missing.",
+      "duplicateColumn": "Two columns map to the same field."
+    },
+    "exportErrors": {
+      "tooManyRows": "More than 10,000 clients are selected. Apply filters to narrow it down."
+    },
+    "history": {
+      "title": "Recent activity",
+      "imports": "Imports",
+      "exports": "Exports",
+      "empty": "No records.",
+      "importLine": "{name} imported {imported} of {total} rows",
+      "exportLine": "{name} exported {count, plural, one {# client} other {# clients}} ({format})",
+      "sensitive": "with full identifiers"
+    },
+    "errors": {
+      "forbidden": "You do not have permission for this action.",
+      "notFound": "Not found.",
+      "conflict": "Conflict while saving.",
+      "invalid": "Check the data.",
+      "generic": "The action could not be completed. Please try again."
+    }
   }
 }

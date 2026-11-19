@@ -21,6 +21,8 @@ import {
 } from "@/modules/clients/list-params";
 import { canSearchIdentifiers } from "@/modules/clients/search";
 import { getClientListOptions, listClients } from "@/modules/clients/service";
+import { ExportButton } from "@/modules/data-transfer/components/export-button";
+import { canExportSensitive } from "@/modules/data-transfer/export-service";
 
 /** Lista de clientes: búsqueda, filtros combinados, orden, paginación y estatus editable. */
 export default async function ClientsPage({
@@ -59,12 +61,22 @@ export default async function ClientsPage({
             {filtered ? t("filters.results", { count: total }) : t("subtitle", { count: total })}
           </p>
         </div>
-        {hasPermission(user, PERMISSIONS.CLIENT_CREATE) && (
-          <Link href="/clients/new" className={buttonClasses("primary")}>
-            <Plus aria-hidden className="size-4" />
-            {t("newClient")}
-          </Link>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {hasPermission(user, PERMISSIONS.DATA_EXPORT) && (
+            <ExportButton
+              query={clientListQuery(params).replace(/^\?/, "")}
+              count={total}
+              canIncludeSensitive={canExportSensitive(user)}
+              seesInsurance={options.seesInsurance}
+            />
+          )}
+          {hasPermission(user, PERMISSIONS.CLIENT_CREATE) && (
+            <Link href="/clients/new" className={buttonClasses("primary")}>
+              <Plus aria-hidden className="size-4" />
+              {t("newClient")}
+            </Link>
+          )}
+        </div>
       </div>
 
       <ClientFilters

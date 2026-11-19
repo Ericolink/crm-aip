@@ -32,6 +32,7 @@ export const PERMISSIONS = {
   // Datos
   DATA_IMPORT: "data.import",
   DATA_EXPORT: "data.export",
+  DATA_EXPORT_SENSITIVE: "data.export_sensitive", // incluir identificadores completos al exportar (solo administrador)
   // Administración
   SETTINGS_MANAGE: "settings.manage", // aseguradoras, programas, catálogos
   USER_MANAGE: "user.manage",

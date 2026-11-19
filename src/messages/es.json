@@ -943,5 +943,103 @@
       "invalid": "Revisa los campos marcados (los recordatorios completados o cancelados no se pueden modificar).",
       "generic": "No se pudo completar la acción. Inténtalo de nuevo."
     }
+  },
+  "DataTransfer": {
+    "title": "Importar / Exportar",
+    "subtitle": "Carga clientes desde un archivo o descarga tu lista en Excel o CSV.",
+    "export": {
+      "title": "Exportar clientes",
+      "body": "Descarga los clientes que puedes ver, con sus datos de contacto y, si tienes acceso, su cobertura actual.",
+      "bodyFiltered": "Se exportarán los {count, plural, one {# cliente} other {# clientes}} de la lista con los filtros aplicados.",
+      "fromList": "Para exportar solo una parte, filtra la lista de clientes y usa su botón Exportar.",
+      "button": "Exportar",
+      "format": "Formato",
+      "excel": "Excel (.xlsx)",
+      "csv": "CSV (.csv)",
+      "masked": "Los números de Medicare, Medicaid y de miembro se exportan ocultos (•••• 1234).",
+      "sensitive": "Incluir identificadores completos (Medicare, Medicaid, nº de miembro)",
+      "sensitiveWarning": "El archivo contendrá información protegida de salud. Guárdalo solo en equipos protegidos, no lo envíes por correo sin cifrar y bórralo cuando ya no lo necesites. La exportación queda registrada.",
+      "sensitiveConfirm": "Entiendo y quiero incluirlos",
+      "download": "Descargar",
+      "downloading": "Preparando…",
+      "done": "Archivo descargado ({count, plural, one {# cliente} other {# clientes}}).",
+      "dialogTitle": "Exportar clientes",
+      "close": "Cerrar"
+    },
+    "import": {
+      "title": "Importar clientes",
+      "body": "Sube un archivo CSV o Excel con una fila por cliente. Se importan datos personales y de contacto; la cobertura, médicos y medicamentos se agregan después en cada perfil.",
+      "rules": "Máximo 2 MB y 2,000 filas. Las columnas Nombre y Apellido son obligatorias. Los encabezados pueden estar en español o inglés.",
+      "template": "Descargar plantilla",
+      "file": "Archivo (.csv o .xlsx)",
+      "analyze": "Revisar archivo",
+      "analyzing": "Revisando…",
+      "previewTitle": "Resultado de la revisión",
+      "nothingSaved": "Todavía no se ha guardado nada.",
+      "total": "Filas en el archivo",
+      "valid": "Listas para importar",
+      "invalid": "Con errores (no se importan)",
+      "duplicates": "Posibles duplicados (se omiten)",
+      "columns": "Columnas reconocidas",
+      "ignored": "Columnas ignoradas",
+      "issues": "Detalle por fila",
+      "row": "Fila",
+      "column": "Columna",
+      "problem": "Problema",
+      "truncated": "Se muestran los primeros 200 problemas.",
+      "confirm": "Importar {count, plural, one {# cliente} other {# clientes}}",
+      "importing": "Importando…",
+      "cancel": "Elegir otro archivo",
+      "noneValid": "No hay filas válidas para importar. Corrige el archivo y vuelve a intentarlo.",
+      "resultTitle": "Importación terminada",
+      "result": "Se importaron {imported, plural, one {# cliente} other {# clientes}}. {skipped, plural, =0 {} one {# fila no se importó.} other {# filas no se importaron.}}",
+      "viewClients": "Ver clientes",
+      "another": "Importar otro archivo",
+      "selectFile": "Elige un archivo primero."
+    },
+    "issueCodes": {
+      "required": "Obligatorio",
+      "tooLong": "Texto demasiado largo",
+      "invalidDate": "Fecha inválida (usa MM/DD/AAAA)",
+      "invalidPhone": "Teléfono inválido (10 dígitos)",
+      "invalidEmail": "Correo inválido",
+      "invalidState": "Estado inválido (2 letras, p. ej. FL)",
+      "invalidZip": "Código postal inválido",
+      "invalidOption": "Valor no reconocido",
+      "unknownAgent": "No existe un agente activo con ese correo",
+      "cannotAssign": "No tienes permiso para asignar agentes",
+      "duplicate": "Ya existe un cliente con el mismo nombre y fecha de nacimiento (o teléfono)",
+      "duplicateInFile": "Repetido en el archivo",
+      "saveFailed": "No se pudo guardar"
+    },
+    "fileErrors": {
+      "unsupported": "Formato no admitido. Usa un archivo .csv o .xlsx.",
+      "tooLarge": "El archivo es demasiado grande (máximo 2 MB).",
+      "empty": "El archivo está vacío.",
+      "unreadable": "No se pudo leer el archivo. Verifica que no esté dañado.",
+      "tooManyRows": "El archivo tiene más de 2,000 filas. Divídelo en varios archivos.",
+      "tooManyColumns": "El archivo tiene demasiadas columnas.",
+      "missingColumns": "Faltan las columnas Nombre y Apellido (First name / Last name).",
+      "duplicateColumn": "Hay dos columnas para el mismo dato."
+    },
+    "exportErrors": {
+      "tooManyRows": "Hay más de 10,000 clientes en la selección. Aplica filtros para reducirla."
+    },
+    "history": {
+      "title": "Actividad reciente",
+      "imports": "Importaciones",
+      "exports": "Exportaciones",
+      "empty": "Sin registros.",
+      "importLine": "{name} importó {imported} de {total} filas",
+      "exportLine": "{name} exportó {count, plural, one {# cliente} other {# clientes}} ({format})",
+      "sensitive": "con identificadores completos"
+    },
+    "errors": {
+      "forbidden": "No tienes permiso para esta acción.",
+      "notFound": "No encontrado.",
+      "conflict": "Conflicto al guardar.",
+      "invalid": "Revisa los datos.",
+      "generic": "No se pudo completar la acción. Inténtalo de nuevo."
+    }
   }
 }
